@@ -1,0 +1,33 @@
+.virtual-select,
+.vscomp-wrapper {
+    background: var(--vs-bg);
+    color: var(--vs-dropdown-color);
+    border-radius: 8px;
+    border: 1px solid var(--vs-border);
+}
+
+.vscomp-option {
+    background: var(--vs-option-bg);
+    color: var(--vs-option-color);
+}
+
+.vscomp-option.selected {
+    background: var(--vs-selected-bg);
+    color: var(--vs-selected-color);
+}
+
+.vscomp-option:hover {
+    background: var(--vs-hover-bg);
+    color: var(--vs-hover-color);
+}
+
+.vscomp-toggle-button {
+    background-color: var(--vs-dropdown-bg);
+    border: var(--vs-border);
+    color: var(--vs-dropdown-color);
+}
+
+.vscomp-option.focused {
+    background: var(--vs-selected-bg);
+    color: var(--vs-selected-color);
+}

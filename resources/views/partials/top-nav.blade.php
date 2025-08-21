@@ -70,6 +70,12 @@
             </a>
             <ul>
                 <li>
+                    <a href="{{ route('bets.index') }}">
+                        <i class="{{ config('other.font-awesome') }} fa-slot-machine"></i>
+                        Bets
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('forums.index') }}">
                         <i class="{{ config('other.font-awesome') }} fa-comments"></i>
                         {{ __('forum.forums') }}

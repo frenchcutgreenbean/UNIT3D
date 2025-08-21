@@ -194,6 +194,7 @@
                     override_can_chat: {{ Js::from($user->can_chat !== null) }},
                     override_can_invite: {{ Js::from($user->can_invite !== null) }},
                     override_can_request: {{ Js::from($user->can_request !== null) }},
+                    override_can_bet: {{ Js::from($user->can_bet !== null) }},
                     override_can_upload: {{ Js::from($user->can_upload !== null) }},
                 }"
             >

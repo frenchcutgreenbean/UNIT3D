@@ -1,0 +1,175 @@
+@use '../base/variables';
+
+main {
+    width: 70vw;
+    margin: 0 auto;
+}
+
+.alpha-table {
+    width: auto;
+    display: table;
+    margin: auto;
+}
+
+.sub-nav__container { 
+    width: 100%;
+    display: table-cell;
+}
+
+.sub-nav {
+    background-color: transparent;
+    border-bottom: none;
+}
+
+
+li.active {
+    font-weight: bold;
+    background-color: variables.$color-bg-tertiary;
+}
+
+.sub-nav__item {
+    float: none;
+    display: inline-block;
+    list-style: none;
+    padding: 10px;
+    margin: 0 10px;
+    cursor: pointer;
+    border: #000;
+    border-radius: 4px 4px 0 0;
+    transition: all .2s ease;
+    color: var(--bbcode-rendered-fg-default);
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+.header__container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 250px;
+    margin: 0 auto 30px auto;
+}
+
+search {
+    width: 50vw;
+    margin: 0 auto;
+}
+
+.bet-tab-content {
+    width: 70vw;
+    margin: 0 auto;
+    padding: 0 50px;
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+            cursor: pointer;
+            text-align: left;
+            padding: 12px 0;
+        }
+
+        tr {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        th,
+        td {
+            flex: 1;
+        }
+    }
+}
+
+.bet-form {
+    border-radius: 12px;
+    padding: 32px 40px;
+    max-width: 600px;
+    margin: 40px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.bet-form label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.bet-form input[type="text"],
+.bet-form input[type="datetime-local"],
+.bet-form select,
+.bet-form textarea {
+    background-color: variables.$color-bg-primary;
+    border: variables.$border-primary;
+    border-radius: variables.$input-border-radius;
+    color: variables.$color-fg-primary;
+    font-size: 14px;
+    font-weight: 400;
+    height: 40px;
+    max-width: 100%;
+    outline: none;
+    padding: 12px;
+    width: 100%;
+}
+
+.bets-create-edit__container {
+    margin-top: 60px;
+}
+
+.bet-form input[type="text"]:focus,
+.bet-form input[type="datetime-local"]:focus,
+.bet-form select:focus,
+.bet-form textarea:focus {
+    outline: none;
+}
+
+.bet-form small {
+    font-size: 13px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.bet-form .bet-outcomes-options__container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.bet-form .extra-options__container {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.bet-form button[type="submit"] {
+    border: none;
+    border-radius: 6px;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: background 0.2s;
+}
+
+.bet-form button[type="submit"]:hover {
+    transform: scale(1.02);
+}
+
+.bet-form .bet-name__container,
+.bet-form .bet-description__container,
+.bet-form .bet-outcomes__container,
+.bet-form .payout-info__container,
+.bet-form .min-bet__container,
+.bet-form .closing-time__container {
+    margin-bottom: 18px;
+}

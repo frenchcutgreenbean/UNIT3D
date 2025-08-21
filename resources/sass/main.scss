@@ -73,6 +73,7 @@
 @use 'components/user-tag';
 @use 'components/user-torrents';
 @use 'components/user-uploads';
+@use 'components/virtual-select-overrides';
 
 // Pages
 @use 'pages/error';
@@ -88,6 +89,7 @@
 @use 'pages/torrent';
 @use 'pages/torrents';
 @use 'pages/user';
+@use 'pages/bets';
 
 // Shame
 @use 'shame';
