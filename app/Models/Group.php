@@ -114,13 +114,38 @@ class Group extends Model
             'can_invite'       => 'bool',
             'can_request'      => 'bool',
             'can_upload'       => 'bool',
+            'can_bet'          => 'bool',
             'is_incognito'     => 'bool',
             'autogroup'        => 'bool',
             'system_required'  => 'bool',
             'min_ratio'        => 'decimal:2',
         ];
     }
-
+    public static function flagFields(): array
+    {
+        return [
+            'is_uploader'   => 'Uploader',
+            'is_internal'   => 'Internal',
+            'is_editor'     => 'Editor',
+            'is_torrent_modo' => 'Torrent Modo',
+            'is_modo'       => 'Modo',
+            'is_admin'      => 'Admin',
+            'is_owner'      => 'Owner',
+            'is_trusted'    => 'Trusted',
+            'is_immune'     => 'Immune',
+            'is_freeleech'  => 'Freeleech',
+            'is_double_upload' => 'Double Upload',
+            'is_refundable' => 'Refundable Download',
+            'is_incognito'  => 'Incognito',
+            'can_chat'      => 'Chat',
+            'can_comment'   => 'Comment',
+            'can_invite'    => 'Invite',
+            'can_bet'       => 'Can Bet',
+            'can_request'   => 'Request',
+            'can_upload'    => 'Upload',
+            'autogroup'     => 'Autogroup',
+        ];
+    }
     /**
      * The attributes that aren't mass assignable.
      *

@@ -140,6 +140,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'can_invite'              => 'bool',
             'can_upload'              => 'bool',
             'can_chat'                => 'bool',
+            'can_bet'                 => 'bool',
             'is_donor'                => 'bool',
             'is_lifetime'             => 'bool',
         ];
