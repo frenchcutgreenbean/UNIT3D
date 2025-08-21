@@ -118,6 +118,19 @@ Route::middleware('language')->group(function (): void {
             Route::get('/user-icons/{user:username}', [App\Http\Controllers\AuthenticatedImageController::class, 'userIcon'])->name('user_icon');
         });
 
+        // Bets System
+        Route::prefix('bets')->name('bets.')->group(function (): void {
+            Route::get('/', [App\Http\Controllers\BetController::class, 'index'])->name('index');
+            Route::get('/create', [App\Http\Controllers\BetController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\BetController::class, 'store'])->name('store');
+            Route::get('/{bet}', [App\Http\Controllers\BetController::class, 'show'])->name('show');
+            Route::get('/{bet}/edit', [App\Http\Controllers\BetController::class, 'edit'])->name('edit');
+            Route::put('/{bet}', [App\Http\Controllers\BetController::class, 'update'])->name('update');
+            Route::delete('/{bet}', [App\Http\Controllers\BetController::class, 'destroy'])->name('destroy');
+            Route::post('/{bet}/entries', [App\Http\Controllers\BetController::class, 'storeEntry'])->name('entries.store');
+            Route::post('/{bet}/close', [App\Http\Controllers\BetController::class, 'close'])->name('close');
+        });
+
         // Donation System
         Route::prefix('donations')->name('donations.')->group(function (): void {
             Route::get('/', [App\Http\Controllers\DonationController::class, 'index'])->name('index');
