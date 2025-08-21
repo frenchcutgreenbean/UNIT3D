@@ -63,6 +63,7 @@ class UserFactory extends Factory
             'can_request'       => $this->faker->boolean(),
             'can_invite'        => $this->faker->boolean(),
             'can_upload'        => $this->faker->boolean(),
+            'can_bet'           => $this->faker->boolean(),
             'remember_token'    => Str::random(10),
             'api_token'         => $this->faker->uuid(),
             'last_login'        => $this->faker->dateTime(),
