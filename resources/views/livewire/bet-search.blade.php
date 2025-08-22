@@ -1,22 +1,20 @@
-<div class="page__bets">
-    <div class="header__container">
-        <h1 class="header__title">Bets |</h1>
-        <a href="/bets/create">Create New</a>
+<div class="bet__index-container">
+    <div class="bet__header-container">
+        <h1 class="bet__header-title">Bets | <a href="/bets/create">New</a></h1>
+        
     </div>
-    <div class="alpha-table">
-        <div class="sub-nav__container">
-            <ul class="sub-nav">
-                <li class="sub-nav__item {{ $activeTab === 'open' ? 'active' : '' }}" wire:click="setTab('open')">Open
+        <div class="bet__sub-nav-container">
+            <ul class="bet__sub-nav">
+                <li class="bet__sub-nav-item {{ $activeTab === 'open' ? 'active' : '' }}" wire:click="setTab('open')">Open
                 </li>
-                <li class="sub-nav__item {{ $activeTab === 'closed' ? 'active' : '' }}" wire:click="setTab('closed')">
+                <li class="bet__sub-nav-item {{ $activeTab === 'closed' ? 'active' : '' }}" wire:click="setTab('closed')">
                     Closed</li>
-                <li class="sub-nav__item {{ $activeTab === 'completed' ? 'active' : '' }}"
+                <li class="bet__sub-nav-item {{ $activeTab === 'completed' ? 'active' : '' }}"
                     wire:click="setTab('completed')">Completed</li>
             </ul>
         </div>
-    </div>
-    <search class="compact-search bet-search__filters" x-data="toggle">
-        <div class="compact-search__visible-default">
+    <search class="bet__compact-search bet__search-filters" x-data="toggle">
+        <div class="bet__compact-search-visible-default">
             <p class="form__group">
                 <input id="name" wire:model.live="name" type="search" autocomplete="off" class="form__text"
                     placeholder=" " />
@@ -26,11 +24,12 @@
             </p>
         </div>
     </search>
-    <div class="bet-tab-content">
+    <div class="bet__tab-content">
         <table>
             <thead>
                 <tr>
-                    <th wire:click="sortBy('name')" role="columnheader button">
+                    <th class="bet__info-head"
+                        wire:click="sortBy('name')" role="columnheader button">
                         {{ __('common.name') }}
                         @include('livewire.includes._sort-icon', ['field' => 'name'])
                     </th>
@@ -50,26 +49,30 @@
                         Pot Size
                         @include('livewire.includes._sort-icon', ['field' => 'pot_size'])
                     </th>
+                    <th wire:click="sortBy('total_entries')" role="columnheader button">
+                        Members
+                        @include('livewire.includes._sort-icon', ['field' => 'total_entries'])
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($bets as $bet)
                     <tr>
-                        <td>
-                            <a href="/bets/{{ $bet->id }}" class="bet-link"> {{ $bet->name }}</a>
+                        <td class="bet__info">
+                            <a href="/bets/{{ $bet->id }}" class="bet__link"> {{ $bet->name }}</a>
                             <x-user-tag
                                     :user="$bet->user"
                                     :anon="$bet->anon"
                                 />
-                            <p class="bet-range"><i class="fas fa-coins"></i>{{ $bet->min_bet }} - {{ $bet->min_bet * 10 }}</p>
+                            <p class="bet__range"><i class="fas fa-coins"></i>{{ $bet->min_bet }} - {{ $bet->min_bet * 10 }}</p>
                         </td>
-                        <td>{{ $bet->activity }}</td>
-                        <td>
+                        <td class="bet__activity">{{ $bet->activity ? $bet->activity : 'N/A' }}</td>
+                        <td class="bet__closing-time">
                             <time datetime="{{ $bet->closing_time }}" title="{{ $bet->closing_time }}">
                                 {{ $bet->closing_time ? $bet->closing_time->diffForHumans() : 'N/A' }}
                             </time>
                         </td>
-                        <td>
+                        <td class="bet__created-at">
                             <time datetime="{{ $bet->created_at }}" title="{{ $bet->created_at }}">
                                 {{ $bet->created_at ? $bet->created_at->diffForHumans() : 'N/A' }}
                             </time>
@@ -78,13 +81,18 @@
                             <i class="fas fa-coins"></i>
                             {{ $bet->pot_size }}
                         </td>
+                        <td class="bet__total-members">{{ $bet->total_entries }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6">No bets found.</td>
+                        <td colspan="7">No bets found.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+
+        <div class="pagination-wrapper">
+            {{ $bets->links('partials.pagination') }}
+        </div>
     </div>
 </div>

@@ -25,6 +25,9 @@ class BetSearch extends Component
     #[Url(history: true)]
     public string $sortDirection = 'desc';
 
+    #[Url(history: true)]
+    public int $perPage = 10;
+
     public function setTab($tab)
     {
         $this->activeTab = $tab;
@@ -36,10 +39,27 @@ class BetSearch extends Component
         $this->resetPage();
     }
 
+    public function updatedSortField()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSortDirection()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedPerPage()
+    {
+        $this->resetPage();
+    }
+    
     public function render()
     {
         $bets = Bet::query()
             ->with(['user', 'entries', 'outcomes'])
+            // add DB-side counter so we can order by it in SQL
+            ->withCount(['entries as total_entries'])
             ->when($this->activeTab === 'open', function($q) {
                 return $q->where('status', 'open')
                         ->where(function($query) {
@@ -58,22 +78,30 @@ class BetSearch extends Component
             })
             ->when($this->activeTab === 'completed', fn($q) => $q->where('status', 'completed'))
             ->when($this->name, fn($q) => $q->where('name', 'like', "%{$this->name}%"))
+
             ->when($this->sortField === 'activity', function($q) {
-                // Custom sorting for activity field
+                // leave out select('bets.*') so withCount() stays in the select list
                 return $q->leftJoin('bet_entries', 'bets.id', '=', 'bet_entries.bet_id')
-                        ->select('bets.*')
-                        ->groupBy('bets.id')
-                        ->orderByRaw('MAX(bet_entries.created_at) ' . $this->sortDirection);
+                         ->groupBy('bets.id')
+                         ->orderByRaw('(MAX(bet_entries.created_at) IS NULL), MAX(bet_entries.created_at) ' . $this->sortDirection);
             })
             ->when($this->sortField === 'pot_size', function($q) {
-                // Custom sorting for pot size
                 return $q->leftJoin('bet_entries', 'bets.id', '=', 'bet_entries.bet_id')
-                        ->select('bets.*')
-                        ->groupBy('bets.id')
-                        ->orderByRaw('COALESCE(SUM(bet_entries.amount), 0) ' . $this->sortDirection);
+                         ->groupBy('bets.id')
+                         ->orderByRaw('(SUM(bet_entries.amount) IS NULL), COALESCE(SUM(bet_entries.amount), 0) ' . $this->sortDirection);
             })
-            ->when($this->sortField !== 'activity' && $this->sortField !== 'pot_size', fn($q) => $q->orderBy($this->sortField, $this->sortDirection))
-            ->paginate(25);
+            ->when($this->sortField === 'closing_time', function($q) {
+                return $q->orderByRaw('(closing_time IS NULL), closing_time ' . $this->sortDirection);
+            })
+            // sort by the DB-side alias we added above
+            ->when($this->sortField === 'total_entries', fn($q) => $q->orderBy('total_entries', $this->sortDirection))
+
+            ->when($this->sortField !== 'activity' 
+                   && $this->sortField !== 'pot_size' 
+                   && $this->sortField !== 'closing_time'
+                   && $this->sortField !== 'total_entries',
+                  fn($q) => $q->orderBy($this->sortField, $this->sortDirection))
+            ->paginate($this->perPage);
 
         return view('livewire.bet-search', compact('bets'));
     }

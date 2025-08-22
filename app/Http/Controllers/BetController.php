@@ -8,7 +8,9 @@ use App\Http\Requests\Staff\CloseBetRequest;
 use App\Models\Bet;
 use App\Models\BetEntry;
 use App\Models\BetOutcome;
+use App\Notifications\BetClosed;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class BetController extends Controller
 {
@@ -203,6 +205,28 @@ class BetController extends Controller
 
         // Calculate and distribute payouts
         $this->distributePayout($bet, $validated['winner_outcome_id']);
+
+        // --- notify participants of result ---
+        $winnerId = $validated['winner_outcome_id'];
+        $entries = $bet->entries()->with('user')->get(); // all entries with users
+
+        foreach ($entries->groupBy('user_id') as $userEntries) {
+            $user = $userEntries->first()->user;
+            if (! $user) {
+                continue;
+            }
+
+            $userWinningEntries = $userEntries->where('bet_outcome_id', $winnerId);
+
+            if ($userWinningEntries->isNotEmpty()) {
+                // prefer stored payout (distributePayout sets 'payout'), fallback to sum
+                $payout = $userWinningEntries->sum('payout') ?: 0;
+                $user->notify(new BetClosed('won', $bet, (float) $payout));
+            } else {
+                $user->notify(new BetClosed('lost', $bet, null));
+            }
+        }
+        // --- end notify ---
 
         return redirect()->route('bets.show', $bet->id)
             ->with('success', 'Bet has been closed and payouts distributed!');

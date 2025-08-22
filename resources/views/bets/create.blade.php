@@ -8,7 +8,7 @@
         Create Bet
     </li>
 @endsection
-@section('page', 'page__bets--index')
+@section('page', 'page__bets--create')
 
 @section('main')
 

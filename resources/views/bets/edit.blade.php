@@ -8,7 +8,7 @@
         Edit Bet
     </li>
 @endsection
-@section('page', 'page__bets--index')
+@section('page', 'page__bets--edit')
 
 @section('main')
     @include('bets.partials.form', [

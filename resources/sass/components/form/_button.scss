@@ -43,6 +43,13 @@
     border-radius: var(--button-filled-border-radius);
 }
 
+.form__button--danger {
+    background: var(--button-danger-bg, #d9534f);
+    color: var(--button-danger-fg, #e8e8e8);
+    border: var(--button-danger-border, 1px solid #d9534f);
+    border-radius: var(--button-danger-border-radius, 5px);
+}
+
 /* Text */
 
 .form__button--text {
