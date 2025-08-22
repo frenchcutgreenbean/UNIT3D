@@ -39,7 +39,7 @@
                       onsubmit="return confirm('Are you sure you want to delete this bet?')">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    <button type="submit" class="form__button danger">Delete</button>
                 </form>
             @endif
         </div>
@@ -72,7 +72,7 @@
                                         <option value="{{ $outcome->id }}">{{ $outcome->name }}</option>
                                     @endforeach
                                 </select>
-                                <button type="submit" class="btn btn-danger" 
+                                <button type="submit" class="form__button danger" 
                                         onclick="return confirm('Are you sure? This will close the bet and distribute payouts.')">
                                     Close Bet
                                 </button>
@@ -200,7 +200,7 @@
                             <label class="anon-checkbox">
                                 <input type="checkbox" name="anon" value="1"> Anonymous
                             </label>
-                            <button type="submit" class="btn btn-primary btn-sm">Place Bet</button>
+                            <button type="submit" class="form__button">Place Bet</button>
                         </div>
                         <small class="balance-info">
                             Your current balance: {{ number_format($user->seedbonus) }} BP

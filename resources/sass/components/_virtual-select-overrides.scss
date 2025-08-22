@@ -1,33 +1,32 @@
-.virtual-select,
-.vscomp-wrapper {
-    background: var(--vs-bg);
-    color: var(--vs-dropdown-color);
-    border-radius: 8px;
-    border: 1px solid var(--vs-border);
+.vscomp-option,
+.vscomp-dropbox,
+.vscomp-search-wrapper,
+.vscomp-options-container,
+.vscomp-options-list,
+.vscomp-options {
+    background: var(--meta-dropdown-bg, var(--bbcode-input-body-bg, #222));
+    background-image: none;
+    color: var(--meta-dropdown-fg, var(--body-fg, #ddd));
 }
 
-.vscomp-option {
-    background: var(--vs-option-bg);
-    color: var(--vs-option-color);
+.vscomp-ele {
+    margin-left: 8px !important;
 }
 
+.vscomp-option:hover,
+.vscomp-option.focused,
 .vscomp-option.selected {
-    background: var(--vs-selected-bg);
-    color: var(--vs-selected-color);
-}
-
-.vscomp-option:hover {
-    background: var(--vs-hover-bg);
-    color: var(--vs-hover-color);
+    background: var(--meta-dropdown-hover-bg, rgba(255, 255, 255, 0.03));
+    color: var(--meta-dropdown-hover-fg, var(--body-fg, #fff));
 }
 
 .vscomp-toggle-button {
-    background-color: var(--vs-dropdown-bg);
-    border: var(--vs-border);
-    color: var(--vs-dropdown-color);
+    border: var(--input-text-border, 1px solid #555);
+    background: var(--bbcode-input-body-bg, transparent);
+    border-radius: var(--input-text-border-radius, 5px);
+    color: var(--input-text-fg, #bbb);
 }
 
-.vscomp-option.focused {
-    background: var(--vs-selected-bg);
-    color: var(--vs-selected-color);
+.vscomp-dropbox-container.pop-comp-wrapper {
+    z-index: 9999;
 }

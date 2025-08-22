@@ -1,8 +1,6 @@
 <div class="page-edit-create">
     <div class="header__container">
-        <a href="/bets">Bets</a>
-        <h1 class="header__title">{{ $titleText }}</h1>
-
+        <h1 class="header__title"> <a href="/bets">Bets</a> | <a href="/{{ $titleText }}">{{ $titleText }}</a></h1>
     </div>
     <form class='bet-form' method="POST" action="{{ $action }}">
         @csrf
@@ -12,7 +10,7 @@
 
         <div class="bet-name__container">
             <label for="name">Bet</label>
-            <input type="text" name="name" id="name"
+            <input class="form__text" type="text" name="name" id="name"
                 placeholder="Example: Izzy vs Strickland in UFC 300 (required)"
                 value="{{ old('name', $bet->name ?? '') }}" required>
             <small>Enter a title for the bet.</small>
@@ -20,8 +18,9 @@
 
         <div class="bet-description__container">
             <label for="description">Overview</label>
-            <textarea name="description" id="description"
+            <textarea class="form__text" name="description" id="description"
                 placeholder="Enter a brief summary or overview of what members are betting on.">{{ old('description', $bet->description ?? '') }}</textarea>
+            <small>Enter a brief summary or overview of what members are betting on, bbcode allowed.</small>
         </div>
 
         <div class="bet-outcomes__container">
@@ -33,7 +32,7 @@
                 </small>
             <div class="bet-outcomes-options__container">
                 @for ($i = 1; $i <= 5; $i++)
-                    <input type="text" name="outcomes[]" id="outcome{{ $i }}"
+                    <input class="form__text" type="text" name="outcomes[]" id="outcome{{ $i }}"
                         placeholder="Option {{ $i }}{{ $i <= 2 ? ' (required)' : '' }}"
                         value="{{ old('outcomes.' . ($i - 1), isset($bet->outcomes[$i - 1]) ? $bet->outcomes[$i - 1]->name : '') }}"
                         {{ $i <= 2 ? 'required' : '' }}>
@@ -54,7 +53,7 @@
 
         <div class="closing-time__container">
             <label for="closing_time">Expiry Date/Time</label>
-            <input type="datetime-local" name="closing_time" id="closing_time"
+            <input class="form__text" type="datetime-local" name="closing_time" id="closing_time"
                 value="{{ old('closing_time', isset($bet) && $bet->closing_time ? $bet->closing_time->format('Y-m-d\TH:i') : now()->addDay()->format('Y-m-d\TH:i')) }}"
                 min="{{ now()->format('Y-m-d\TH:i') }}"
                 max="{{ now()->addYears(5)->format('Y-m-d\TH:i') }}"

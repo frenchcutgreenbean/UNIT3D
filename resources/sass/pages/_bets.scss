@@ -1,175 +1,534 @@
-@use '../base/variables';
-
-main {
-    width: 70vw;
+.page__bets {
+    color: var(--post-fg, var(--body-fg, #ddd));
+    background: transparent;
+    padding: 20px 16px;
+    max-width: 1200px;
     margin: 0 auto;
-}
 
-.alpha-table {
-    width: auto;
-    display: table;
-    margin: auto;
-}
+    .header__container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 14px;
 
-.sub-nav__container { 
-    width: 100%;
-    display: table-cell;
-}
+        .header__title {
+            color: var(--panel-head-fg, var(--body-fg, #fff));
+            margin: 0;
+            font-weight: 600;
+        }
 
-.sub-nav {
-    background-color: transparent;
-    border-bottom: none;
-}
+        a {
+            color: var(--button-filled-fg, #ddd);
+            padding: 6px 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background .15s ease, color .15s ease;
+        }
+
+        a:hover {
+            background: var(--button-filled-bg, rgba(255, 255, 255, 0.06));
+        }
+    }
 
 
-li.active {
-    font-weight: bold;
-    background-color: variables.$color-bg-tertiary;
-}
 
-.sub-nav__item {
-    float: none;
-    display: inline-block;
-    list-style: none;
-    padding: 10px;
-    margin: 0 10px;
-    cursor: pointer;
-    border: #000;
-    border-radius: 4px 4px 0 0;
-    transition: all .2s ease;
-    color: var(--bbcode-rendered-fg-default);
 
-    &:hover {
-        transform: scale(1.1);
+    .sub-nav__container {
+        margin-bottom: 0;
+        margin-bottom: 12px;
+    }
+
+    .sub-nav {
+        display: flex;
+        gap: 8px;
+        list-style: none;
+        padding: 6px;
+        margin: 0 0 8px 0;
+
+        &__item {
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--secondary-nav-tab-fg, var(--body-fg, #ccc));
+            background: var(--secondary-nav-bg, transparent);
+            border: 1px solid transparent;
+            transition: background .12s ease, color .12s ease, transform .06s ease;
+        }
+
+        &__item.active {
+            background: var(--meta-dropdown-hover-bg, rgba(255, 255, 255, 0.02));
+            color: var(--meta-id-tag-hover-fg, #fff);
+            transform: translateY(-1px);
+        }
+
+        &__item.hover {
+            background-color: var(--meta-dropdown-hover-bg, rgba(255, 255, 255, 0.02));
+        }
+    }
+
+
+    .bet-tab-content {
+        background: var(--panel-bg, transparent);
+        border: var(--panel-border, none);
+        border-radius: 6px;
+        overflow: hidden;
+
+        table {
+            width: min(max(80vw, 600px), calc(1200px - 32px));
+            border-collapse: collapse;
+            table-layout: auto;
+
+            .fa-coins {
+                color: #ffc00a;
+            }
+
+            thead {
+                th {
+                    text-align: left;
+                    padding: 12px 14px;
+                    color: var(--panel-head-fg, var(--body-fg));
+                    background: var(--panel-head-bg, rgba(0, 0, 0, 0.2));
+                    border-bottom: 1px solid var(--data-table-tr-border, rgba(255, 255, 255, 0.03));
+                    cursor: pointer;
+                    user-select: none;
+                }
+
+                .bet-info-head {
+                    width: min(max(30vw, 300px), calc(800px));
+                }
+            }
+
+            tbody {
+                tr {
+                    background: var(--post-bg, transparent);
+                    transition: background .12s ease;
+
+                    &:not(:last-child) {
+                        border-bottom: 1px solid var(--data-table-tr-border, rgba(255, 255, 255, 0.03));
+                    }
+
+                    &:hover {
+                        background: var(--data-table-tr-hover-bg, rgba(255, 255, 255, 0.02));
+                    }
+
+                    td {
+                        padding: 10px 14px;
+                        vertical-align: middle;
+                        color: var(--post-fg, var(--body-fg));
+                    }
+
+                    .bet-info {
+                        display: grid;
+                        grid-template-rows: auto auto;
+                        grid-template-columns: 100px auto;
+                        row-gap: 0;
+                        text-align: left;
+                        align-items: center;
+
+                        a {
+                            grid-row: 1;
+                            grid-column: 1 / -1;
+                            align-self: start;
+                            justify-self: start;
+                        }
+
+                        span {
+                            grid-row: 2;
+                            display: block;
+                            margin-bottom: 2px;
+                        }
+
+                        p {
+                            grid-row: 2;
+                            display: block;
+                            margin: 0;
+                            font-size: 12px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .bet-link {
+            color: var(--meta-id-tag-fg, var(--panel-head-fg));
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .bet-link:hover {
+            color: #7289da;
+            text-decoration: underline;
+        }
+
+        .bet-range {
+            color: var(--bbcode-rendered-fg-muted, #8b949e);
+        }
+
+        .bet__pot-size {
+            text-align: right;
+            font-weight: 600;
+            color: var(--meta-chip-name-fg, var(--post-fg));
+        }
+
+        /* Empty state */
+        .empty-state {
+            padding: 30px;
+            text-align: center;
+            color: var(--bbcode-rendered-fg-muted, #9aa0a6);
+        }
+    }
+
+    .pagination,
+    .paginate {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        padding: 12px 0;
+
+        a,
+        span {
+            display: inline-block;
+            min-width: 34px;
+            padding: 6px 10px;
+            text-align: center;
+            border-radius: 6px;
+            color: var(--paginate-fg, #bbb);
+            background: var(--paginate-bg, transparent);
+            border: 1px solid var(--paginate-divider, rgba(255, 255, 255, 0.02));
+        }
+
+        a:hover {
+            background: var(--paginate-bg-hover, rgba(255, 255, 255, 0.02));
+            color: var(--paginate-fg, #fff);
+        }
+
+        .current,
+        .active {
+            background: var(--paginate-bg-current, rgba(0, 0, 0, 0.2));
+            color: var(--paginate-fg, #fff);
+        }
+    }
+
+    /* responsive: hide less important columns on small screens */
+    @media (max-width: 900px) {
+
+        .bet-tab-content table thead th:nth-child(4),
+        .bet-tab-content table thead th:nth-child(3) {
+            display: none;
+        }
+
+        .bet-tab-content table tbody td:nth-child(4),
+        .bet-tab-content table tbody td:nth-child(3) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 520px) {
+        padding: 12px 8px;
+
+        .header__container {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .bet-tab-content table thead th:nth-child(5),
+        .bet-tab-content table tbody td:nth-child(5) {
+            display: none;
+        }
     }
 }
 
-.header__container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 250px;
-    margin: 0 auto 30px auto;
-}
+/* Forms (create/edit) and shared bet page styles */
+.page-edit-create {
+    max-width: 900px;
+    margin: 0 auto 30px;
+    padding: 18px;
+    background: var(--panel-bg, transparent);
+    border: var(--panel-border, none);
+    border-radius: 8px;
 
-search {
-    width: 50vw;
-    margin: 0 auto;
-}
 
-.bet-tab-content {
-    width: 70vw;
-    margin: 0 auto;
-    padding: 0 50px;
+    .header__container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
+        a {
+            color: var(--meta-id-tag-fg, var(--panel-head-fg));
+            text-decoration: none;
+        }
 
-        th,
-        td {
+        .header__title {
+            margin: 0;
+            font-size: 26px
+        }
+    }
+
+    .bet-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--legend-fg, #999);
+        }
+
+        small {
+            color: var(--bbcode-rendered-fg-muted, #9aa0a6);
+            display: block;
+            margin-top: 6px;
+        }
+
+        .bet-name__container,
+        .bet-description__container,
+        .bet-outcomes__container,
+        .payout-info__container,
+        .closing-time__container,
+        .extra-options__container {
+            background: transparent;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .bet-outcomes-options__container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        /* Virtual select container (keep simple, VirtualSelect has its own styles) */
+        #min_bet_virtual_select {
+            margin: 6px 0 0;
+            max-width: 420px;
+        }
+
+        .disabled-field {
+            opacity: 0.6;
+            background: rgba(0, 0, 0, 0.02);
+            pointer-events: none;
+        }
+
+        button[type="submit"] {
+            align-self: flex-start;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            background: var(--button-filled-bg, #444);
+            color: var(--button-filled-fg, #fff);
             cursor: pointer;
-            text-align: left;
-            padding: 12px 0;
+            transition: transform .06s ease, box-shadow .08s ease;
         }
 
-        tr {
-            display: flex;
-            justify-content: space-around;
+        button[type="submit"]:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
         }
+    }
+}
 
-        th,
-        td {
+/* Show page */
+.page__bets--show,
+.page__bets--show * {
+    box-sizing: border-box;
+}
+
+.page__bets--show {
+    max-width: 1100px;
+    margin: 0 auto 28px;
+    padding: 18px;
+
+    .danger {
+        border: var(--select-border-error) !important;
+        border-radius: 5px;
+        background: var(--label-fg-error, #ff5d5d);
+    }
+
+    .header__container {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .bet-header {
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+
+        .bet-info {
             flex: 1;
         }
+
+        .bet-title {
+            color: var(--meta-chip-name-fg, var(--post-fg));
+        }
+
+        .bet-meta {
+            color: var(--bbcode-rendered-fg-muted, #9aa0a6);
+            margin-top: 6px;
+        }
+
+        .bet-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mod-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+    }
+
+    .bet-completed-alert,
+    .bet-expired-alert {
+        padding: 10px 12px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        color: var(--alert-fg, #ddd);
+        background: var(--alert-bg, rgba(0, 0, 0, 0.15));
+        border: 1px solid var(--alert-gap-color, rgba(255, 255, 255, 0.02));
+    }
+
+    .bet-description {
+        margin: 10px 0 18px;
+        color: var(--bbcode-rendered-fg-default, #c9d1d9);
+    }
+
+    .bet-stats {
+        margin-bottom: 18px;
+    }
+
+    .bet-stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--panel-bg, transparent);
+
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--data-table-tr-border, rgba(255, 255, 255, 0.03));
+        }
+
+        strong {
+            color: var(--meta-id-tag-fg, #fff);
+        }
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+
+    .badge-success {
+        background: rgba(46, 125, 50, 0.12);
+        color: green;
+    }
+
+    .badge-warning {
+        background: rgba(255, 193, 7, 0.08);
+        color: #ffcf66;
+    }
+
+    .badge-primary {
+        background: rgba(33, 150, 243, 0.08);
+        color: #7289da;
+    }
+
+    .bet-outcome {
+        margin-bottom: 18px;
+        padding: 12px;
+        border-radius: 8px;
+        background: var(--post-aside-bg, rgba(0, 0, 0, 0.03));
+    }
+
+    .outcome-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 8px;
+    }
+
+    .outcome-stats {
+        color: var(--bbcode-rendered-fg-muted, #9aa0a6);
+        margin-left: auto;
+    }
+
+    .winner-badge {
+        margin-left: 10px;
+        background: rgba(0, 150, 136, 0.12);
+        color: var(--prize-icon-primary-color, mediumseagreen);
+    }
+
+    .outcome-entries-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+    }
+
+    .outcome-entries-table th,
+    .outcome-entries-table td {
+        padding: 8px;
+        border-bottom: 1px solid var(--data-table-tr-border, rgba(255, 255, 255, 0.03));
+        text-align: left;
+    }
+
+    .no-bets-message,
+    .already-bet-message,
+    .betting-closed-message {
+        color: var(--bbcode-rendered-fg-muted, #9aa0a6);
+    }
+
+    .betting-form-container {
+        margin-top: 10px;
+    }
+
+    .betting-form {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .betting-form label {
+        margin: 0;
+    }
+
+    .betting-form .form__text {
+        max-width: 220px;
+    }
+
+    .balance-info {
+        display: block;
+        margin-top: 6px;
+        color: var(--bbcode-rendered-fg-muted);
+    }
+
+    .inline-form {
+        display: inline-block;
+        margin: 0;
+    }
+
+    .outcome-header .text-success {
+        color: green;
     }
 }
 
-.bet-form {
-    border-radius: 12px;
-    padding: 32px 40px;
-    max-width: 600px;
-    margin: 40px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+/* small utility tweaks for icons and inline elements */
+.bet-meta x-user-tag,
+.bet-meta x-user-tag * {
+    vertical-align: middle;
 }
 
-.bet-form label {
-    font-weight: 600;
-    margin-bottom: 6px;
-    display: block;
-}
-
-.bet-form input[type="text"],
-.bet-form input[type="datetime-local"],
-.bet-form select,
-.bet-form textarea {
-    background-color: variables.$color-bg-primary;
-    border: variables.$border-primary;
-    border-radius: variables.$input-border-radius;
-    color: variables.$color-fg-primary;
-    font-size: 14px;
-    font-weight: 400;
-    height: 40px;
-    max-width: 100%;
-    outline: none;
-    padding: 12px;
-    width: 100%;
-}
-
-.bets-create-edit__container {
-    margin-top: 60px;
-}
-
-.bet-form input[type="text"]:focus,
-.bet-form input[type="datetime-local"]:focus,
-.bet-form select:focus,
-.bet-form textarea:focus {
-    outline: none;
-}
-
-.bet-form small {
-    font-size: 13px;
-    margin-bottom: 8px;
-    display: block;
-}
-
-.bet-form .bet-outcomes-options__container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.bet-form .extra-options__container {
-    display: flex;
-    gap: 24px;
-    align-items: center;
-    margin-top: 12px;
-}
-
-.bet-form button[type="submit"] {
-    border: none;
+.bet-outcome .btn {
+    padding: 6px 10px;
     border-radius: 6px;
-    padding: 12px 0;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 16px;
-    transition: background 0.2s;
-}
-
-.bet-form button[type="submit"]:hover {
-    transform: scale(1.02);
-}
-
-.bet-form .bet-name__container,
-.bet-form .bet-description__container,
-.bet-form .bet-outcomes__container,
-.bet-form .payout-info__container,
-.bet-form .min-bet__container,
-.bet-form .closing-time__container {
-    margin-bottom: 18px;
 }
