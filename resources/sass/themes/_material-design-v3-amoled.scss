@@ -116,8 +116,7 @@
     --icon-button-border-radius: 9999px;
     --icon-button-fg: currentColor;
 
-    --icon-button-filled-bg: #5cb579
-        linear-gradient(to bottom right, #0ba360, #2bb673);
+    --icon-button-filled-bg: #5cb579 linear-gradient(to bottom right, #0ba360, #2bb673);
     --icon-button-filled-fg: white;
     --icon-button-filled-border: none;
 
@@ -377,6 +376,24 @@
     --user-stat-card-border-radius: 22px;
     --user-stat-card-box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
         0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+        
+    /* Bets */
+
+    --bet-foreground: #ccc;
+    --bet-foreground-alt: #fff;
+    --bet-bg: #000;
+    --bet-bg-alt: #0a0a0a;
+    --bet-bg-item: #0a0a0a;
+    --bet-bg-active: #111111;
+    --bet-muted: #8b949e;
+    --bet-muted-weak: #aaa;
+    --bet-link-hover: #fff;
+    --bet-coin-accent: #ffb800;
+    --bet-active-tab-fg: #fff;
+    --bet-border: 1px solid rgba(255, 255, 255, 0.03);
+    --bet-overlay-01: rgba(255, 255, 255, 0.01);
+    --bet-overlay-02: rgba(255, 255, 255, 0.02);
+    --bet-overlay-03: rgba(255, 255, 255, 0.03);
 }
 
 .panel__heading {
@@ -386,10 +403,7 @@
 }
 
 /* Bottom-most table header cells which don't have a following tbody nor tfoot */
-.data-table
-    > thead:not(:has(+ tbody > tr)):not(:has(~ tfoot > tr))
-    > tr:last-of-type
-    > th {
+.data-table>thead:not(:has(+ tbody > tr)):not(:has(~ tfoot > tr))>tr:last-of-type>th {
     border-bottom: none;
 }
 
@@ -454,7 +468,7 @@ a:hover {
     box-shadow: none;
 }
 
-.comment__list-item + .comment__list-item > .comment {
+.comment__list-item+.comment__list-item>.comment {
     border-top: 1px solid #444;
     border-radius: 0;
     padding-top: 22px;

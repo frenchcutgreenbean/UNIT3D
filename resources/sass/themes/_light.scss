@@ -48,8 +48,7 @@
     --breadcrumb-hover-fg: #000;
     --breadcrumb-inactive-text-decoration: none;
 
-    --button-filled-bg: #5cb579
-        linear-gradient(to bottom right, #0ba360, #2bb673);
+    --button-filled-bg: #5cb579 linear-gradient(to bottom right, #0ba360, #2bb673);
     --button-filled-border: none;
     --button-filled-border-radius: 9999px;
     --button-filled-fg: white;
@@ -118,8 +117,7 @@
     --icon-button-border-radius: 9999px;
     --icon-button-fg: currentColor;
 
-    --icon-button-filled-bg: #5cb579
-        linear-gradient(to bottom right, #0ba360, #2bb673);
+    --icon-button-filled-bg: #5cb579 linear-gradient(to bottom right, #0ba360, #2bb673);
     --icon-button-filled-fg: white;
     --icon-button-filled-border: none;
 
@@ -377,4 +375,23 @@
     --user-stat-card-border: none;
     --user-stat-card-border-radius: 0;
     --user-stat-card-box-shadow: none;
+
+
+    /* Bets Pages */
+    
+    --bet-foreground: #212121;
+    --bet-foreground-alt: #0a0a0a;
+    --bet-bg: #efefef;
+    --bet-bg-alt: #e5e5e5;
+    --bet-bg-item: #dddddd;
+    --bet-bg-active: #d8d8d8;
+    --bet-muted: #57606a;
+    --bet-muted-weak: #616266;
+    --bet-link-hover: #0969da;
+    --bet-coin-accent: #ffb800;
+    --bet-active-tab-fg: #000;
+    --bet-border: 1px solid var(--bet-overlay-03);
+    --bet-overlay-01: rgba(0, 0, 0, 0.01);
+    --bet-overlay-02: rgba(0, 0, 0, 0.02);
+    --bet-overlay-03: rgba(0, 0, 0, 0.03);
 }

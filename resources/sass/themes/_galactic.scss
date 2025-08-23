@@ -405,6 +405,24 @@
     --user-stat-card-border: none;
     --user-stat-card-border-radius: 0;
     --user-stat-card-box-shadow: none;
+
+    /* Bets Pages */
+
+    --bet-foreground: #ccc;
+    --bet-foreground-alt: #eeeeee;
+    --bet-bg: #1b1b1b;
+    --bet-bg-alt: #2b2b2b;
+    --bet-bg-item: #292929;
+    --bet-bg-active: #393939;
+    --bet-muted: #8b949e;
+    --bet-muted-weak: #9aa0a6;
+    --bet-link-hover: #7289da;
+    --bet-coin-accent: #ffc00a;
+    --bet-active-tab-fg: #fff;
+    --bet-border: 1px solid var(--bet-overlay-03);
+    --bet-overlay-01: rgba(255, 255, 255, 0.01);
+    --bet-overlay-02: rgba(255, 255, 255, 0.02);
+    --bet-overlay-03: rgba(255, 255, 255, 0.03);
 }
 
 .text-bright {
@@ -435,9 +453,11 @@ a:hover {
 .text-green {
     color: var(--color-light-green);
 }
+
 .text-muted {
     color: #999;
 }
+
 .text-red {
     color: var(--color-light-red);
 }
@@ -484,7 +504,7 @@ a:hover {
     color: #818686;
 }
 
-#frame .content .messages ul li > img {
+#frame .content .messages ul li>img {
     border: 3px solid #7289da;
 }
 
@@ -513,24 +533,27 @@ a:hover {
 ============================================================================
 
 /* Message avatar */
-.sent > a {
+.sent>a {
     height: 100%;
     position: absolute;
     bottom: 0;
 }
-.sent > a > img {
+
+.sent>a>img {
     display: block !important;
     height: 100%;
     position: absolute;
     bottom: 4px;
 }
+
 /* Avatar */
 #frame .content .messages ul li.sent img.chat-user-image {
     height: 40px;
     width: 40px;
 }
+
 /* Message header */
-.sent > h4 {
+.sent>h4 {
     display: block !important;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
@@ -538,20 +561,23 @@ a:hover {
     padding: 4px 12px 0 8px;
     margin: 4px 12px 0 48px;
 }
+
 /* Message text */
-.sent > div {
+.sent>div {
     display: block !important;
     border-bottom-right-radius: 15px;
     background-color: var(--message-bubble-bg) !important;
     padding: 0 12px 4px 8px !important;
     margin: 0 12px 4px 48px !important;
 }
+
 /* Bot messages */
-.sent > .system {
+.sent>.system {
     border-bottom-left-radius: 15px;
 }
+
 /* Message triangle tip */
-.sent > div:not(.system):before {
+.sent>div:not(.system):before {
     content: '';
     position: absolute;
     bottom: 4px;
@@ -561,6 +587,7 @@ a:hover {
     border-top: 10px solid transparent;
     /* border-bottom: 10px solid transparent; */
 }
+
 /* Entire Message */
 #frame .content .messages ul li.sent {
     border: 0;
@@ -568,6 +595,7 @@ a:hover {
     max-width: 85%;
     width: auto;
 }
+
 /* Timestamp */
 #frame .content .messages ul li.sent h4 .text-muted {
     float: none;

@@ -51,11 +51,30 @@ For example dark blue,
     --torrent-row-sticky-fg: var(--text-color);
     --torrent-row-highspeed-fg: var(--color-light-red);
     --torrent-row-bumped-fg: #ffb800;
+    
+    /* Bets Pages */
+
+    --bet-foreground: #ccc;
+    --bet-foreground-alt: #eeeeee;
+    --bet-bg: #1b1b1b;
+    --bet-bg-alt: #2b2b2b;
+    --bet-bg-item: #292929;
+    --bet-bg-active: #393939;
+    --bet-muted: #8b949e;
+    --bet-muted-weak: #9aa0a6;
+    --bet-link-hover: #7289da;
+    --bet-coin-accent: #ffc00a;
+    --bet-active-tab-fg: #fff;
+    --bet-border: 1px solid var(--bet-overlay-03);
+    --bet-overlay-01: rgba(255, 255, 255, 0.01);
+    --bet-overlay-02: rgba(255, 255, 255, 0.02);
+    --bet-overlay-03: rgba(255, 255, 255, 0.03);
 }
 
 .text-green {
     color: #3fb618;
 }
+
 .text-muted {
     color: #999;
 }
@@ -64,7 +83,7 @@ i.torrent-icon {
     color: var(--color-blue);
 }
 
-.panel-chat > .panel-body > #frame > .content {
+.panel-chat>.panel-body>#frame>.content {
     background-color: var(--color-dark-blue);
 }
 

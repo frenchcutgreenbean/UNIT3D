@@ -366,6 +366,24 @@
     --user-stat-card-border: none;
     --user-stat-card-border-radius: 0;
     --user-stat-card-box-shadow: none;
+
+    /* Bets Pages */
+    
+    --bet-foreground: #ccc;
+    --bet-foreground-alt: #eeeeee;
+    --bet-bg: #19191b;
+    --bet-bg-alt: #222;
+    --bet-bg-item: #272727;
+    --bet-bg-active: #393939;
+    --bet-muted: #8b949e;
+    --bet-muted-weak: #aaa;
+    --bet-link-hover: #7f7d80;
+    --bet-coin-accent: #ffc00a;
+    --bet-active-tab-fg: #fff;
+    --bet-border: 1px solid var(--bet-overlay-03);
+    --bet-overlay-01: rgba(255, 255, 255, 0.01);
+    --bet-overlay-02: rgba(255, 255, 255, 0.02);
+    --bet-overlay-03: rgba(255, 255, 255, 0.03);
 }
 
 .text-red {

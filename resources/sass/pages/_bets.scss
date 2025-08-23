@@ -8,7 +8,7 @@
     margin-bottom: 14px;
 
     .bet__header-title {
-        color: var(--panel-head-fg, #fff);
+        color: var(--bet-foreground-alt, #eeeeee);
         margin: 0;
         font-weight: 600;
     }
@@ -44,7 +44,7 @@
 
 /* Bet Index layout */
 .bet__index-container {
-    color: var(--post-fg, var(--body-fg, #ddd));
+    color: var(--bet-foreground, #ccc);
     background: transparent;
     padding: 20px 16px;
 
@@ -64,26 +64,26 @@
             padding: 6px 10px;
             border-radius: 6px;
             cursor: pointer;
-            color: var(--secondary-nav-tab-fg, var(--body-fg, #ccc));
-            background: var(--secondary-nav-bg, transparent);
+            color: var(--bet-foreground, #ccc);
+            background: var(--bet-bg-item, transparent);
             border: 1px solid transparent;
             transition: background .12s ease, color .12s ease, transform .06s ease;
         }
 
         &-item.active {
-            background: var(--meta-dropdown-hover-bg, rgba(255, 255, 255, 0.02));
-            color: var(--meta-id-tag-hover-fg, #fff);
+            background: var(--bet-bg-active, #393939);
+            color: var(--bet-active-tab-fg, #fff);
             transform: translateY(-1px);
         }
 
         &-item.hover {
-            background-color: var(--meta-dropdown-hover-bg, rgba(255, 255, 255, 0.02));
+            background-color: var(--bet-overlay-02, rgba(255, 255, 255, 0.02));
         }
     }
 
 
     .bet__tab-content {
-        background: var(--panel-bg, transparent);
+        background: var(--bet-bg-alt, #2b2b2b);
         border: var(--panel-border, none);
         border-radius: 6px;
         overflow: hidden;
@@ -93,16 +93,16 @@
             table-layout: auto;
 
             .fa-coins {
-                color: #ffc00a;
+                color: var(--bet-coin-accent, #ffc00a);
             }
 
             thead {
                 th {
                     text-align: left;
                     padding: 12px 14px;
-                    color: var(--panel-head-fg, #fff);
-                    background: var(--panel-head-bg, rgba(0, 0, 0, 0.2));
-                    border-bottom: 1px solid var(--data-table-tr-border, rgba(255, 255, 255, 0.03));
+                    color: var(--bet-foreground-alt, #eeeeee);
+                    background: var(--bet-bg, #1b1b1b);
+                    border-bottom: var(--bet-border, 1px solid rgba(255, 255, 255, 0.03));
                     cursor: pointer;
                     user-select: none;
                 }
@@ -114,21 +114,21 @@
 
             tbody {
                 tr {
-                    background: var(--post-bg, transparent);
+                    background: var(--bet-bg-alt, #2b2b2b);
                     transition: background .12s ease;
 
                     &:not(:last-child) {
-                        border-bottom: 1px solid var(--data-table-tr-border, rgba(255, 255, 255, 0.03));
+                        border-bottom: var(--bet-border, 1px solid rgba(255, 255, 255, 0.03));
                     }
 
                     &:hover {
-                        background: var(--data-table-tr-hover-bg, rgba(255, 255, 255, 0.02));
+                        background: var(--bet-bg, #1b1b1b);
                     }
 
                     td {
                         padding: 10px 14px;
                         vertical-align: middle;
-                        color: var(--post-fg, var(--body-fg));
+                        color: var(--bet-foreground, #ccc);
                     }
 
                     .bet__info {
@@ -166,13 +166,13 @@
                     .bet__created-at,
                     .bet__pot-size {
                         text-align: left;
-                        color: var(--bbcode-rendered-fg-muted, #8b949e);
+                        color: var(--bet-muted, #8b949e);
                         font-size: 12px;
                     }
 
                     .bet__total-members {
                         text-align: left;
-                        color: var(--bbcode-rendered-fg-muted, #8b949e);
+                        color: var(--bet-muted, #8b949e);
                         font-size: 12px;
                     }
                 }
@@ -180,24 +180,24 @@
         }
 
         .bet__link {
-            color: var(--meta-id-tag-fg, var(--panel-head-fg));
+            color: var(--meta-id-tag-fg, var(--bet-foreground-alt, #eeeeee));
             font-weight: 600;
             text-decoration: none;
         }
 
         .bet__link:hover {
-            color: #7289da;
+            color: var(--bet-link-hover, #7289da);
             text-decoration: underline;
         }
 
         .bet__range {
-            color: var(--bbcode-rendered-fg-muted, #8b949e);
+            color: var(--bet-muted, #8b949e);
         }
 
         .empty-state {
             padding: 30px;
             text-align: center;
-            color: var(--bbcode-rendered-fg-muted, #9aa0a6);
+            color: var(--bet-muted, #9aa0a6);
         }
     }
 
@@ -238,7 +238,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: var(--input-text-border, 1px solid #bbbbbb4f);
+            border-bottom: var(--bet-border, 1px solid rgba(255, 255, 255, 0.03));
         }
 
         .bet__main-container {
@@ -262,11 +262,11 @@
 
             .bet__description {
                 margin-top: 12px;
-                background: rgba(255, 255, 255, 0.01);
-                border: 1px solid rgba(255, 255, 255, 0.02);
+                background: var(--bet-overlay, rgba(255, 255, 255, 0.01));
+                border: var(--bet-border, 1px solid rgba(255, 255, 255, 0.02));
                 padding: 12px;
                 border-radius: 6px;
-                color: var(--post-fg, var(--body-fg));
+                color: var(--bet-foreground, #ccc);
                 font-size: 14px;
                 line-height: 1.6;
                 word-break: break-word;
@@ -322,7 +322,7 @@
                         display: flex;
                         flex-direction: row;
                         justify-content: space-between;
-                        border-bottom: var(--input-text-border, 1px solid #bbbbbb4f);
+                        border-bottom: var(--bet-border, 1px solid rgba(255, 255, 255, 0.03));
                     }
 
                     td {
@@ -333,12 +333,12 @@
                     td:first-child {
                         width: 40%;
                         font-weight: 600;
-                        color: var(--panel-head-fg, #fff);
+                        color: var(--bet-foreground-alt, #eeeeee);
                     }
 
                     td:last-child {
                         text-align: right;
-                        color: var(--post-fg, var(--body-fg));
+                        color: var(--bet-foreground, #ccc);
                     }
 
                     tr:last-child td {
@@ -350,14 +350,14 @@
 
         .bet__outcome-container {
             margin-top: 12px;
-        }   
+        }
 
         .bet__outcome {
-            background: rgba(255, 255, 255, 0.01);
+            background: var(--bet-overlay-01, rgba(255, 255, 255, 0.01));
             padding: 14px;
             border-radius: 6px;
             margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.02);
+            border: var(--bet-border, 1px solid rgba(255, 255, 255, 0.02));
         }
 
         .bet__outcome-header {
@@ -410,8 +410,8 @@
     }
 
     .bet__form {
-        background: var(--panel-bg, var(--surface-bg, transparent));
-        border: var(--panel-border, 1px solid rgba(255, 255, 255, 0.02));
+        background: var(--bet-bg-alt, #2b2b2b);
+        border: var(--bet-border, 1px solid rgba(255, 255, 255, 0.02));
         border-radius: 10px;
         padding: 22px;
         display: flex;
@@ -435,13 +435,13 @@
         display: block;
         font-weight: 600;
         margin-bottom: 6px;
-        color: var(--panel-head-fg, #fff);
+        color: var(--bet-foreground-alt, #eeeeee);
     }
 
     small {
         display: block;
         margin-top: 6px;
-        color: var(--bbcode-rendered-fg-muted, #8b949e);
+        color: var(--bet-muted, #8b949e);
         font-size: 12px;
         line-height: 1.3;
     }

@@ -392,6 +392,24 @@
     --user-stat-card-border: none;
     --user-stat-card-border-radius: 10px;
     --user-stat-card-box-shadow: none;
+
+    /* Bets */
+
+    --bet-foreground: var(--text-color);
+    --bet-foreground-alt: #e5e9f0;
+    --bet-bg: #3b4252;
+    --bet-bg-alt: #2e3440;
+    --bet-bg-item: #434c5e;
+    --bet-bg-active: #4c566a;
+    --bet-muted: #81a1c1;
+    --bet-muted-weak: #5e81ac;
+    --bet-link-hover: #88c0d0;
+    --bet-coin-accent: #ebcb8b;
+    --bet-active-tab-fg: #eceff4;
+    --bet-border: 1px solid var(--bet-overlay-03);
+    --bet-overlay-01: rgba(255, 255, 255, 0.01);
+    --bet-overlay-02: rgba(255, 255, 255, 0.02);
+    --bet-overlay-03: rgba(255, 255, 255, 0.03);
 }
 
 /* Links
@@ -425,13 +443,13 @@ hr {
     background-color: transparent;
 }
 
-.panelV2 > :nth-child(2) {
+.panelV2> :nth-child(2) {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     overflow: hidden;
 }
 
-.panelV2 > :not(:has(~ :not([style*='display: none']))) {
+.panelV2> :not(:has(~ :not([style*='display: none']))) {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     overflow: hidden;
@@ -470,38 +488,27 @@ hr {
 ---------------------------------------------------------------------------- */
 
 /* Bottom-left-most table header which doesn't have a following tbody, tfoot nor pagination */
-.data-table-wrapper:not(:has(+ .pagination)) >.data-table
-    > thead:not(:has(+ tbody > tr)):not(:has(~ tfoot > tr))
-    > tr:last-of-type
-    > th:first-of-type,
+.data-table-wrapper:not(:has(+ .pagination))>.data-table>thead:not(:has(+ tbody > tr)):not(:has(~ tfoot > tr))>tr:last-of-type>th:first-of-type,
 /* Bottom-left-most tbody table row cell which doesn't have a following tfoot nor pagination */
-.data-table-wrapper:not(:has(+ .pagination)) >.data-table > tbody:not(:has(~ tfoot > tr)) > tr:last-of-type td:first-of-type,
+.data-table-wrapper:not(:has(+ .pagination))>.data-table>tbody:not(:has(~ tfoot > tr))>tr:last-of-type td:first-of-type,
 /* Bottom-left-most tfoot table row cell which doesn't have a following pagination */
-.data-table-wrapper:not(:has(+ .pagination)) >.data-table > tfoot > tr:last-of-type > td:first-of-type {
+.data-table-wrapper:not(:has(+ .pagination))>.data-table>tfoot>tr:last-of-type>td:first-of-type {
     border-bottom-left-radius: 10px;
 }
 
 /* Unhidden bottom-right-most table cell on bon earning calculation page */
-.data-table-wrapper:not(:has(+ .pagination)) >.data-table
-    tr:last-of-type
-    td:not([style='display: none;']):has(+ td[style='display: none;']),
+.data-table-wrapper:not(:has(+ .pagination))>.data-table tr:last-of-type td:not([style='display: none;']):has(+ td[style='display: none;']),
 /* Bottom-right-most table header which doesn't have a following tbody, tfoot nor pagination */
-.data-table-wrapper:not(:has(+ .pagination)) >.data-table
-    > thead:not(:has(+ tbody > tr)):not(:has(~ tfoot > tr))
-    > tr:last-of-type
-    > th:last-of-type,
+.data-table-wrapper:not(:has(+ .pagination))>.data-table>thead:not(:has(+ tbody > tr)):not(:has(~ tfoot > tr))>tr:last-of-type>th:last-of-type,
 /* Bottom-right-most tbody table row cell which doesn't have a following tfoot nor pagination */
-.data-table-wrapper:not(:has(+ .pagination)) >.data-table > tbody:not(:has(~ tfoot > tr)) > tr:last-of-type td:last-of-type,
+.data-table-wrapper:not(:has(+ .pagination))>.data-table>tbody:not(:has(~ tfoot > tr))>tr:last-of-type td:last-of-type,
 /* Bottom-right-most tfoot table row cell which doesn't have a following pagination */
-.data-table-wrapper:not(:has(+ .pagination)) >.data-table > tfoot > tr:last-of-type > td:last-of-type {
+.data-table-wrapper:not(:has(+ .pagination))>.data-table>tfoot>tr:last-of-type>td:last-of-type {
     border-bottom-right-radius: 10px;
 }
 
 /* Bottom-most table header cells which don't have a following tbody nor tfoot */
-.data-table
-    > thead:not(:has(+ tbody > tr)):not(:has(~ tfoot > tr))
-    > tr:last-of-type
-    > th {
+.data-table>thead:not(:has(+ tbody > tr)):not(:has(~ tfoot > tr))>tr:last-of-type>th {
     border-bottom: none;
 }
 
@@ -523,11 +530,11 @@ hr {
 /* Top Nav Notifications
 ---------------------------------------------------------------------------- */
 
-svg > circle:first-child {
+svg>circle:first-child {
     stroke: #ebcb8b;
 }
 
-svg > circle:last-child {
+svg>circle:last-child {
     fill: #ebcb8b;
 }
 
@@ -538,17 +545,12 @@ svg > circle:last-child {
     background-color: #434c5e;
 }
 
-.page__topic--show > article > div > section > .panel__body {
+.page__topic--show>article>div>section>.panel__body {
     background-color: transparent;
     padding: 12px 0 8px 0;
 }
 
-.page__topic--show
-    > article
-    > div
-    > section
-    > .panel__header
-    > .panel__heading {
+.page__topic--show>article>div>section>.panel__header>.panel__heading {
     font-size: 16px;
     text-transform: initial;
 }
@@ -578,7 +580,7 @@ svg > circle:last-child {
 /* BBCode input
 ---------------------------------------------------------------------------- */
 
-.bbcode-input__tab-input:checked + .bbcode-input__tab-label {
+.bbcode-input__tab-input:checked+.bbcode-input__tab-label {
     color: #88c0d0;
     border-bottom: 2px solid #88c0d0;
 }

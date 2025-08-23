@@ -18,7 +18,7 @@
 
 .vscomp-toggle-button {
     border: var(--input-text-border, 1px solid #555);
-    background: var(--bbcode-input-body-bg, transparent);
+    background: inherit;
     border-radius: var(--input-text-border-radius, 5px);
     color: var(--input-text-fg, #bbb);
 }
