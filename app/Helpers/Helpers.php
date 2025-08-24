@@ -47,6 +47,15 @@ if (!\function_exists('href_torrent')) {
     }
 }
 
+if (!\function_exists('href_bet')){
+    function href_bet(App\Models\Bet $bet): string
+    {
+        $appurl = appurl();
+
+        return \sprintf('%s/bets/%s', $appurl, $bet->id);
+    }
+}
+
 if (!\function_exists('href_request')) {
     function href_request(App\Models\TorrentRequest $torrentRequest): string
     {
@@ -229,5 +238,135 @@ if (!\function_exists('language_flag')) {
         {
             return str_replace([' ', '/', '\\'], ['.', '-', '-'], $filename);
         }
+    }
+}
+
+if (!\function_exists('can_bet')) {
+    /**
+     * Can this user place bets?
+     */
+    function can_bet(?\App\Models\User $user = null, ?\App\Models\Bet $bet = null): bool
+    {
+        $user = $user ?? auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        // explicit user flag overrides group
+        if (isset($user->can_bet)) {
+            return (bool) $user->can_bet;
+        }
+
+        // fall back to group permission if present
+        return (bool) ($user->group->can_bet ?? false);
+    }
+}
+
+
+if (!\function_exists('can_edit_bet')) {
+    /**
+     * Can this user edit bets?
+     */
+    function can_edit_bet(?\App\Models\User $user = null, ?\App\Models\Bet $bet = null): bool
+    {
+        $user = $user ?? auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        // Creator can edit if no wagers exist (ensure $bet exists)
+        if ($bet && $bet->user_id === $user->id && $bet->canBeEdited()) {
+            return true;
+        }
+
+        // Moderators can edit any bet (use existing flag name)
+        if (! empty($user->group->is_modo)) {
+            return true;
+        }
+
+        // explicit flags
+        if (isset($user->can_edit_bet)) {
+            return (bool) $user->can_edit_bet;
+        }
+
+        return (bool) ($user->group->can_edit_bet ?? false);
+    }
+}
+
+if (!\function_exists('can_create_bet')) {
+    /**
+     * Can this user create bets?
+     */
+    function can_create_bet(?\App\Models\User $user = null): bool
+    {
+        $user = $user ?? auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        if (isset($user->can_create_bet)) {
+            return (bool) $user->can_create_bet;
+        }
+
+        return (bool) ($user->group->can_create_bet ?? false);
+    }
+}
+
+if (!\function_exists('can_close_bet')) {
+    /**
+     * Can this user close/resolve bets? (moderator or explicit flag)
+     */
+    function can_close_bet(?\App\Models\User $user = null, ?\App\Models\Bet $bet = null): bool
+    {
+        $user = $user ?? auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        // moderators always can
+        if (!empty($user->group->is_modo)) {
+            return true;
+        }
+
+        if ($bet && ($bet->user_id === $user->id) && ($user->can_close_bet ?? $user->group->can_close_bet)) {
+            return true;
+        }
+
+        return false;
+    }
+}
+
+
+if (!\function_exists('can_delete_bet')) {
+    /**
+     * Can this user delete bets? (moderator or explicit flag)
+     */
+    function can_delete_bet(?\App\Models\User $user = null, ?\App\Models\Bet $bet = null): bool
+    {
+        $user = $user ?? auth()->user();
+
+        if (! $user || ! $bet) {
+            return false;
+        }
+
+        // moderators always can
+        if (! empty($user->group->is_modo)) {
+            return true;
+        }
+
+        if (isset($user->can_delete_bet)) {
+            return (bool) $user->can_delete_bet;
+        }
+
+        // bet owner can delete their own bet if no entries (example rule)
+        if ($bet->user_id === $user->id && $bet->canBeEdited()) {
+            return true;
+        }
+
+        return (bool) ($user->group->can_delete_bet ?? false);
     }
 }
