@@ -9,6 +9,7 @@ use App\Models\Bet;
 use App\Models\BetEntry;
 use App\Models\BetOutcome;
 use App\Notifications\BetClosed;
+use App\Notifications\BetDeleted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 
@@ -145,16 +146,60 @@ class BetController extends Controller
     public function destroy(Request $request, Bet $bet)
     {
         $user = $request->user();
-        if ($bet->entries()->count() > 0) {
-            return redirect()->route('bets.show', $bet->id)
-                ->with('error', 'Cannot delete bet after entries have been made.');
-        }
         abort_unless(can_delete_bet($user, $bet), 403);
 
-        $bet->delete();
+        // Prevent deleting bets that have been completed (payouts already distributed)
+        if ($bet->status === 'completed') {
+            return redirect()->route('bets.show', $bet->id)
+                ->with('error', 'Cannot delete a completed bet.');
+        }
 
-        return redirect()->route('bets.index')
-            ->with('success', 'Bet deleted successfully!');
+        \DB::beginTransaction();
+        try {
+            // Sum amounts per user to refund
+            $refunds = $bet->entries()
+                ->select('user_id', \DB::raw('SUM(amount) as total'))
+                ->groupBy('user_id')
+                ->get();
+
+            $hadAnyEntries = $refunds->isNotEmpty();
+
+            foreach ($refunds as $r) {
+                // Defensive: ensure user exists
+                $userModel = \App\Models\User::find($r->user_id);
+                if (! $userModel) {
+                    \Log::warning('Bet refund: user not found', ['user_id' => $r->user_id, 'bet_id' => $bet->id]);
+                    continue;
+                }
+
+                // Refund the user's seedbonus
+                $amount = (float) $r->total;
+                if ($amount > 0) {
+                    $userModel->increment('seedbonus', $amount);
+
+                    // notify the user about the refund
+                    $userModel->notify(new BetDeleted($bet->name, $amount));
+
+                    \Log::info('Bet refund processed', ['user_id' => $r->user_id, 'bet_id' => $bet->id, 'amount' => $amount]);
+                }
+            }
+
+            // delete related entries/outcomes/comments then the bet
+            $bet->entries()->delete();
+            $bet->outcomes()->delete();
+            $bet->comments()->delete();
+            $bet->delete();
+
+            \DB::commit();
+
+            return redirect()->route('bets.index')
+                ->with('success', 'Bet deleted and entries refunded successfully!');
+        } catch (\Throwable $e) {
+            \DB::rollBack();
+            \Log::error('Failed to delete bet and refund entries', ['bet_id' => $bet->id, 'error' => $e->getMessage()]);
+            return redirect()->route('bets.show', $bet->id)
+                ->with('error', 'Failed to delete bet. See logs.');
+        }
     }
 
     /**
