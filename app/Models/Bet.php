@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\BetStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\Comment;
@@ -42,7 +43,7 @@ class Bet extends Model
      */
     protected $casts = [
         'closing_time' => 'datetime',
-        'status' => 'string',
+        'status' => BetStatus::class,
         'is_open_ended' => 'boolean',
         'is_concluded' => 'boolean',
         'is_hidden' => 'boolean',
@@ -50,13 +51,18 @@ class Bet extends Model
 
     /**
      * Belongs to a user (creator).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
      */
-    public function user()
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
     }
+
     /**
      * Get the total number of entries for this bet.
+     *
+     * @return int
      */
     public function getTotalEntriesAttribute(): int
     {
@@ -65,6 +71,8 @@ class Bet extends Model
 
     /**
      * Get the total pot size for this bet.
+     *
+     * @return float
      */
     public function getPotSizeAttribute(): float
     {
@@ -73,11 +81,13 @@ class Bet extends Model
 
     /**
      * Has many outcomes.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<BetOutcome>
      */
-    public function outcomes()
+    public function outcomes(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-            return $this->hasMany(BetOutcome::class);
-        }
+        return $this->hasMany(BetOutcome::class);
+    }
   /**
      * Polymorphic comments relation.
      *
@@ -90,14 +100,18 @@ class Bet extends Model
 
     /**
      * Has many entries (bets placed).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<BetEntry>
      */
-    public function entries()
+    public function entries(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(BetEntry::class);
     } 
 
     /**
      * Get the last activity time for this bet.
+     *
+     * @return string|null
      */
     public function getActivityAttribute(): ?string
     {
@@ -108,8 +122,10 @@ class Bet extends Model
 
     /**
      * Belongs to the winning outcome.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<BetOutcome, $this>
      */
-    public function winnerOutcome()
+    public function winnerOutcome(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(BetOutcome::class, 'winner_outcome_id');
     }
@@ -124,10 +140,12 @@ class Bet extends Model
 
     /**
      * Check if the bet is open for betting.
+     *
+     * @return bool
      */
     public function isOpenForBetting(): bool
     {
-        return $this->status === 'open' && 
+        return $this->status === BetStatus::OPEN && 
                ($this->is_open_ended || !$this->closing_time || now()->lt($this->closing_time));
     }
 

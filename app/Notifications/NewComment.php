@@ -136,8 +136,8 @@ class NewComment extends Notification
             ],
             $this->model instanceof Bet => [
                 'title' => 'New Bet Comment Received',
-                'body'  => $username.' has left a comment on bet '.$this->model->name,
-                'url'   => '/bets/'.$this->model->id.'#comment-'.$this->comment->id,
+                'body'  => $username.' has left a comment on bet '.($this->model->name ?? 'Unknown Bet'),
+                'url'   => $this->model->exists ? '/bets/'.$this->model->id.'#comment-'.$this->comment->id : null,
             ],
         };
     }

@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Bet;
+use App\Enums\BetStatus;
 use App\Traits\LivewireSort;
 use Livewire\Attributes\Url;
 
@@ -27,6 +28,11 @@ class BetSearch extends Component
 
     #[Url(history: true)]
     public int $perPage = 10;
+
+    public function mount()
+    {
+        $this->perPage = config('betting.items_per_page', 10);
+    }
 
     public function setTab($tab)
     {
@@ -62,7 +68,7 @@ class BetSearch extends Component
             ->with(['user', 'entries', 'outcomes'])
             ->withCount(['entries as total_entries'])
             ->when($this->activeTab === 'open', function($q) {
-                return $q->where('status', 'open')
+                return $q->where('status', BetStatus::OPEN)
                         ->where(function($query) {
                             $query->where('closing_time', '>', now())
                                   ->orWhereNull('closing_time')
@@ -70,14 +76,15 @@ class BetSearch extends Component
                         });
             })
             ->when($this->activeTab === 'closed', function($q) {
-                return $q->where('status', 'closed')
+                return $q->where('status', BetStatus::CLOSED)
                         ->orWhere(function($query) {
-                            $query->where('status', 'open')
+                            $query->where('status', BetStatus::OPEN)
                                   ->where('closing_time', '<=', now())
                                   ->where('is_open_ended', false);
                         });
             })
-            ->when($this->activeTab === 'completed', fn($q) => $q->where('status', 'completed'))
+            ->when($this->activeTab === 'completed', fn($q) => $q->where('status', BetStatus::COMPLETED))
+            ->when($this->activeTab === 'cancelled', fn($q) => $q->where('status', BetStatus::CANCELLED))
             ->when($this->name, fn($q) => $q->where('name', 'like', "%{$this->name}%"))
 
             ->when($this->sortField === 'activity', function($q) {

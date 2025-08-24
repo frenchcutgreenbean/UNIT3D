@@ -129,6 +129,7 @@ Route::middleware('language')->group(function (): void {
             Route::delete('/{bet}', [App\Http\Controllers\BetController::class, 'destroy'])->name('destroy');
             Route::post('/{bet}/entries', [App\Http\Controllers\BetController::class, 'storeEntry'])->name('entries.store');
             Route::post('/{bet}/close', [App\Http\Controllers\BetController::class, 'close'])->name('close');
+            Route::post('/{bet}/cancel', [App\Http\Controllers\BetController::class, 'cancel'])->name('cancel');
         });
 
         // Donation System

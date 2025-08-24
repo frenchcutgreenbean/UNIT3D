@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\BetStatus;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CloseBetRequest extends FormRequest
@@ -42,7 +43,7 @@ class CloseBetRequest extends FormRequest
             $bet = $this->route('bet');
             
             // Check if bet is already completed
-            if ($bet && $bet->status === 'completed') {
+            if ($bet && $bet->status === BetStatus::COMPLETED) {
                 $validator->errors()->add('winner_outcome_id', 'This bet has already been completed.');
             }
         });

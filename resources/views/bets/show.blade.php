@@ -12,13 +12,19 @@
 @section('page', 'page__bets--show')
 
 @section('main')
-    @if ($bet->status === 'completed')
+    @if ($bet->status === \App\Enums\BetStatus::COMPLETED)
         <div class="bet-completed-alert">
             <strong>The outcome for this bet has been determined.</strong><br>
             The winning outcome was <strong>{{ $bet->winnerOutcome->name ?? 'N/A' }}</strong>
         </div>
     @endif
-    @if ($bet->hasExpired() && $bet->status === 'closed')
+    @if ($bet->status === \App\Enums\BetStatus::CANCELLED)
+        <div class="bet-cancelled-alert">
+            <strong>This bet has been cancelled.</strong><br>
+            All entries have been refunded.
+        </div>
+    @endif
+    @if ($bet->hasExpired() && $bet->status === \App\Enums\BetStatus::CLOSED)
         <div class="bet-expired-alert">
             <strong>This bet has expired</strong> but is awaiting moderator review.
         </div>
@@ -27,7 +33,7 @@
         <div class="bet__header-container">
             <h1 class="bet__header-title"> <a href="/bets">Bets</a>
                 {{-- Edit/Delete buttons for bet creator when no entries exist --}}
-                @if (can_edit_bet($user, $bet) && $bet->status !== 'completed')
+                @if (can_edit_bet($user, $bet) && $bet->status !== \App\Enums\BetStatus::COMPLETED)
                     | <a href="{{ route('bets.edit', $bet->id) }}">Edit</a>
                 @endif
             </h1>
@@ -37,12 +43,14 @@
                 <h1 class="bet__title">{{ $bet->name }}</h1>
             </div>
             @if (can_delete_bet($user, $bet))
-                <form method="POST" action="{{ route('bets.destroy', $bet->id) }}" class="inline-form"
-                    onsubmit="return confirm('Are you sure you want to delete this bet?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="form__button form__button--danger">Delete</button>
-                </form>
+                <div class="bet__action-buttons">
+                    <form method="POST" action="{{ route('bets.destroy', $bet->id) }}" class="inline-form"
+                        onsubmit="return confirm('Are you sure you want to delete this bet?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="form__button form__button--danger">Delete</button>
+                    </form>
+                </div>
             @endif
         </div>
         <div class="bet__main-container">
@@ -87,8 +95,10 @@
                     <tr>
                         <td><strong>Status:</strong></td>
                         <td>
-                            @if ($bet->status === 'completed')
+                            @if ($bet->status === \App\Enums\BetStatus::COMPLETED)
                                 <span class="badge badge-success">Completed</span>
+                            @elseif ($bet->status === \App\Enums\BetStatus::CANCELLED)
+                                <span class="badge badge-secondary">Cancelled</span>
                             @elseif ($bet->hasExpired())
                                 <span class="badge badge-warning">Expired</span>
                             @else
@@ -114,10 +124,10 @@
             <div class="bet__main-right">
                 <div class="bet__status">
                     <i
-                        class="fas {{ $bet->status === 'completed' || $bet->hasExpired() ? 'fa-lock' : 'fa-lock-open' }}"></i>
+                        class="fas {{ $bet->status === \App\Enums\BetStatus::COMPLETED || $bet->status === \App\Enums\BetStatus::CANCELLED || $bet->hasExpired() ? 'fa-lock' : 'fa-lock-open' }}"></i>
                 </div>
                 {{-- Moderator controls --}}
-                @if (can_close_bet($user, $bet) && $bet->status !== 'completed')
+                @if (can_close_bet($user, $bet) && $bet->status !== \App\Enums\BetStatus::COMPLETED && $bet->status !== \App\Enums\BetStatus::CANCELLED)
                     <div class="bet__mod-controls">
                         <form method="POST" action="{{ route('bets.close', $bet->id) }}" class="close-bet-form">
                             @csrf
@@ -129,11 +139,20 @@
                                         <option value="{{ $outcome->id }}">{{ $outcome->name }}</option>
                                     @endforeach
                                 </select>
-                                <button type="submit" class="form__button form__button--danger"
-                                    onclick="return confirm('Are you sure? This will close the bet and distribute payouts.')">
-                                    Close Bet
-                                </button>
+                                <div class="bet__action-buttons">
+                                    <button type="submit" class="form__button form__button--danger"
+                                        onclick="return confirm('Are you sure? This will close the bet and distribute payouts.')">
+                                        Close Bet
+                                    </button>
+                                    <button type="button" class="form__button form__button--warning"
+                                        onclick="if(confirm('Are you sure? This will cancel the bet and refund all entries.')) { document.getElementById('cancel-form').submit(); }">
+                                        Cancel Bet
+                                    </button>
+                                </div>
                             </div>
+                        </form>
+                        <form id="cancel-form" method="POST" action="{{ route('bets.cancel', $bet->id) }}" style="display: none;">
+                            @csrf
                         </form>
                     </div>
                 @endif
@@ -141,32 +160,39 @@
         </div>
         <div class="bet__outcome-container">
             @foreach ($bet->outcomes as $outcome)
-                <div class="bet__outcome">
+                @php
+                    $outcomeTotal = $outcome->entries->sum('amount');
+                    $totalPot = $bet->pot_size;
+                @endphp
+                <div class="bet__outcome {{ $bet->status === \App\Enums\BetStatus::CANCELLED ? 'bet__outcome--cancelled' : '' }}">
                     <h3 class="bet__outcome-header">
                         {{ $outcome->name }}
                         <span class="bet__outcome-stats">
                             STAKE: {{ number_format($outcome->entries->sum('amount')) }} BP
                             ({{ $outcome->entries->count() }} {{ Str::plural('bet', $outcome->entries->count()) }})
+                            @if (config('betting.show_odds', true) && $bet->status === \App\Enums\BetStatus::OPEN && $totalPot > 0 && $outcomeTotal > 0)
+                                @php
+                                    $houseEdge = config('betting.payout.house_edge', 0.05);
+                                    $payoutPot = $totalPot * (1 - $houseEdge);
+                                    $odds = $payoutPot / $outcomeTotal;
+                                @endphp
+                                | ODDS: {{ number_format($odds, 2) }}:1
+                            @endif
                         </span>
-                        @if ($bet->status === 'completed' && $bet->winner_outcome_id === $outcome->id)
+                        @if ($bet->status === \App\Enums\BetStatus::COMPLETED && $bet->winner_outcome_id === $outcome->id)
                             <span class="badge badge-success bet__winner-badge">WINNER</span>
                         @endif
                     </h3>
 
-                    @php
-                        $outcomeTotal = $outcome->entries->sum('amount');
-                        $totalPot = $bet->pot_size;
-                    @endphp
-
                     @if ($outcome->entries->count() > 0)
-                        <table class="bet__outcome-entries-table">
+                        <table class="bet__outcome-entries-table {{ config('betting.show_expected_payout', true) ? 'show-payout-column' : 'hide-payout-column' }}">
                             <thead>
                                 <tr>
                                     <th>Member</th>
                                     <th>Bet Amount</th>
-                                    @if ($bet->status === 'completed')
+                                    @if ($bet->status === \App\Enums\BetStatus::COMPLETED)
                                         <th>Payout</th>
-                                    @else
+                                    @elseif (config('betting.show_expected_payout', true))
                                         <th>Expected Payout</th>
                                     @endif
                                     <th>When</th>
@@ -180,7 +206,7 @@
                                         </td>
                                         <td>{{ number_format($entry->amount) }} BP</td>
 
-                                        @if ($bet->status === 'completed')
+                                        @if ($bet->status === \App\Enums\BetStatus::COMPLETED)
                                             <td>
                                                 @if ($entry->payout)
                                                     <span class="text-success">{{ number_format($entry->payout, 2) }} BP</span>
@@ -188,7 +214,7 @@
                                                     <span class="text-muted">No payout</span>
                                                 @endif
                                             </td>
-                                        @else
+                                        @elseif (config('betting.show_expected_payout', true))
                                             <td>
                                                 @if ($outcomeTotal > 0)
                                                     {{ number_format((float) $entry->amount / $outcomeTotal * $totalPot, 2) }} BP
@@ -208,7 +234,7 @@
                     @endif
 
                     {{-- Betting form --}}
-                    @if (can_bet($user, $bet) && !$userHasAlreadyBet && $bet->isOpenForBetting() && $bet->status === 'open')
+                    @if (can_bet($user, $bet) && !$userHasAlreadyBet && $bet->isOpenForBetting() && $bet->status === \App\Enums\BetStatus::OPEN)
                         <div class="bet__betting-form-container">
                             <form method="POST" action="{{ route('bets.entries.store', $bet->id) }}">
                                 @csrf
@@ -216,12 +242,14 @@
                                 <div class="bet__betting-form">
                                     <label for="amount_{{ $outcome->id }}"><strong>Bet Amount:</strong></label>
                                     <input type="number" name="amount" id="amount_{{ $outcome->id }}" class="form__text"
-                                        placeholder="Enter amount ({{ number_format($bet->min_bet) }} - {{ number_format($bet->min_bet * 10) }})"
-                                        min="{{ $bet->min_bet }}" max="{{ min($bet->min_bet * 10, $user->seedbonus) }}"
+                                        placeholder="Enter amount ({{ number_format($bet->min_bet) }} - {{ number_format($bet->min_bet * config('betting.max_bet_multiplier', 10)) }})"
+                                        min="{{ $bet->min_bet }}" max="{{ min($bet->min_bet * config('betting.max_bet_multiplier', 10), $user->seedbonus, config('betting.max_bon_amount', 10000000)) }}"
                                         required>
+                                    @if (config('betting.anonymous_betting_allowed', true))
                                     <label class="anon-checkbox">
                                         <input type="checkbox" name="anon" value="1"> Anonymous
                                     </label>
+                                    @endif
                                     <button type="submit" class="form__button form__button--filled">Place Bet</button>
                                 </div>
                                 <small class="bet__balance-info">
@@ -233,7 +261,7 @@
                         <div class="bet__already-bet-message">
                             <small><em>You have already placed a bet on this.</em></small>
                         </div>
-                    @elseif (!$bet->isOpenForBetting() || $bet->status !== 'open')
+                    @elseif (!$bet->isOpenForBetting() || $bet->status !== \App\Enums\BetStatus::OPEN)
                         <div class="bet__betting-closed-message">
                             <small><em>Betting is closed for this outcome.</em></small>
                         </div>

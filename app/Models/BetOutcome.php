@@ -4,7 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * App\Models\BetOutcome
+ *
+ * @property int                             $id
+ * @property int                             $bet_id
+ * @property string                          $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class BetOutcome extends Model
 {
     use HasFactory;
@@ -25,16 +36,20 @@ class BetOutcome extends Model
 
     /**
      * Belongs to a bet.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Bet, $this>
      */
-    public function bet()
+    public function bet(): BelongsTo
     {
         return $this->belongsTo(Bet::class);
     }
 
     /**
      * Has many entries (bets placed on this outcome).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<BetEntry>
      */
-    public function entries()
+    public function entries(): HasMany
     {
         return $this->hasMany(BetEntry::class);
     }

@@ -51,7 +51,7 @@ For example dark blue,
     --torrent-row-sticky-fg: var(--text-color);
     --torrent-row-highspeed-fg: var(--color-light-red);
     --torrent-row-bumped-fg: #ffb800;
-    
+
     /* Bets Pages */
 
     --bet-foreground: #ccc;
@@ -69,6 +69,10 @@ For example dark blue,
     --bet-overlay-01: rgba(255, 255, 255, 0.01);
     --bet-overlay-02: rgba(255, 255, 255, 0.02);
     --bet-overlay-03: rgba(255, 255, 255, 0.03);
+    --bet-primary: #006cdf;
+    --bet-success: #3aa453;
+    --bet-warning: #d7b13f;
+    --bet-danger: #b52a38;
 }
 
 .text-green {

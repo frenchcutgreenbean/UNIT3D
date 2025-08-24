@@ -15,6 +15,8 @@
                     Closed</li>
                 <li class="bet__sub-nav-item {{ $activeTab === 'completed' ? 'active' : '' }}"
                     wire:click="setTab('completed')">Completed</li>
+                <li class="bet__sub-nav-item {{ $activeTab === 'cancelled' ? 'active' : '' }}"
+                    wire:click="setTab('cancelled')">Cancelled</li>
             </ul>
         </div>
     <search class="bet__compact-search bet__search-filters" x-data="toggle">
@@ -61,7 +63,7 @@
             </thead>
             <tbody>
                 @forelse($bets as $bet)
-                    <tr>
+                    <tr class="{{ $bet->status === \App\Enums\BetStatus::CANCELLED ? 'bet--cancelled' : '' }}">
                         <td class="bet__info">
                             <a href="/bets/{{ $bet->id }}" class="bet__link"> {{ $bet->name }}</a>
                             <x-user-tag

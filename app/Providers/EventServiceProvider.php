@@ -29,21 +29,31 @@ class EventServiceProvider extends ServiceProvider
     /**
      * The event listener mappings for the application.
      *
-     * @var array<string, array<int, string>>
+     * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        // Login Timestamp
-        Login::class => [
-            LoginListener::class,
-        ],
-
         Registered::class => [
             RegisteredListener::class,
         ],
-
-        // Achievements System
+        Login::class => [
+            LoginListener::class,
+        ],
         Unlocked::class => [
             AchievementUnlocked::class,
+        ],
+        
+        // Betting Events
+        \App\Events\BetCreated::class => [
+            \App\Listeners\SendBetCreatedChatMessage::class,
+        ],
+        \App\Events\BetClosed::class => [
+            \App\Listeners\ProcessBetClosedNotifications::class,
+        ],
+        \App\Events\BetCancelled::class => [
+            // Add listeners for bet cancellation if needed
+        ],
+        \App\Events\BetEntryCreated::class => [
+            // Add listeners for bet entry creation if needed
         ],
     ];
 

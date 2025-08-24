@@ -26,16 +26,16 @@
     <div class="bet__outcomes-container">
             <label>Possible Outcomes</label>
                 <small>
-                    Provide 2 to 5 possible outcomes for this bet.<br>
+                    Provide {{ config('betting.min_outcomes', 2) }} to {{ config('betting.max_outcomes', 5) }} possible outcomes for this bet.<br>
                     For example, list the teams, nominees, or choices members can wager on.<br>
                     You can edit outcomes until the first wager is placed.
                 </small>
             <div class="bet__outcomes-options-container">
-                @for ($i = 1; $i <= 5; $i++)
+                @for ($i = 1; $i <= config('betting.max_outcomes', 5); $i++)
                     <input class="form__text" type="text" name="outcomes[]" id="outcome{{ $i }}"
-                        placeholder="Option {{ $i }}{{ $i <= 2 ? ' (required)' : '' }}"
+                        placeholder="Option {{ $i }}{{ $i <= config('betting.min_outcomes', 2) ? ' (required)' : '' }}"
                         value="{{ old('outcomes.' . ($i - 1), isset($bet->outcomes[$i - 1]) ? $bet->outcomes[$i - 1]->name : '') }}"
-                        {{ $i <= 2 ? 'required' : '' }}>
+                        {{ $i <= config('betting.min_outcomes', 2) ? 'required' : '' }}>
                 @endfor
             </div>
         </div>
@@ -54,14 +54,14 @@
     <div class="bet__closing-time-container">
             <label for="closing_time">Expiry Date/Time</label>
             <input class="form__text" type="datetime-local" name="closing_time" id="closing_time"
-                value="{{ old('closing_time', isset($bet) && $bet->closing_time ? $bet->closing_time->format('Y-m-d\TH:i') : now()->addDay()->format('Y-m-d\TH:i')) }}"
-                min="{{ now()->format('Y-m-d\TH:i') }}"
-                max="{{ now()->addYears(5)->format('Y-m-d\TH:i') }}"
+                value="{{ old('closing_time', isset($bet) && $bet->closing_time ? $bet->closing_time->format('Y-m-d\TH:i') : now()->addHours(config('betting.default_duration_hours', 24))->format('Y-m-d\TH:i')) }}"
+                min="{{ now()->addMinutes(config('betting.min_duration_minutes', 60))->format('Y-m-d\TH:i') }}"
+                max="{{ now()->addDays(config('betting.max_duration_days', 30))->format('Y-m-d\TH:i') }}"
                 {{ old('is_open_ended', $bet->is_open_ended ?? false) ? '' : 'required' }}>
             <small>
                 Set the date and time when betting will close. For scheduled events, use the event start time.<br>
                 If you want the bet to remain open indefinitely, select "Open Ended" instead.<br>
-                The closing time must be a future date, and cannot be set more than 5 years ahead.
+                The closing time must be at least {{ config('betting.min_duration_minutes', 60) }} minutes from now, and cannot be set more than {{ config('betting.max_duration_days', 30) }} days ahead.
             </small>
         </div>
 
@@ -93,7 +93,7 @@
                         closingTimeInput.setAttribute('required', 'required');
                         closingTimeInput.classList.remove('disabled-field');
                         if (!closingTimeInput.value) {
-                            closingTimeInput.value = "{{ now()->addDay()->format('Y-m-d\TH:i') }}";
+                            closingTimeInput.value = "{{ now()->addHours(config('betting.default_duration_hours', 24))->format('Y-m-d\TH:i') }}";
                         }
                     }
                 }
@@ -106,22 +106,16 @@
                 VirtualSelect.init({
                     ele: '#min_bet_virtual_select',
                     options: [
+                        @foreach(config('betting.allowed_min_bets', [1000, 10000, 100000]) as $minBet)
                         {
-                            label: '1,000 to 10,000 BON',
-                            value: '1000'
-                        },
-                        {
-                            label: '10,000 to 100,000 BON',
-                            value: '10000'
-                        },
-                        {
-                            label: '100,000 to 1,000,000 BON',
-                            value: '100000'
-                        }
+                            label: '{{ number_format($minBet) }} to {{ number_format($minBet * config("betting.max_bet_multiplier", 10)) }} BON',
+                            value: '{{ $minBet }}'
+                        }{{ !$loop->last ? ',' : '' }}
+                        @endforeach
                     ],
                     name: 'min_bet',
                     required: true,
-                    selectedValue: "{{ old('min_bet', $bet->min_bet ?? '1000') }}"
+                    selectedValue: "{{ old('min_bet', $bet->min_bet ?? config('betting.allowed_min_bets.0', 1000)) }}"
                 });
             });
         </script>

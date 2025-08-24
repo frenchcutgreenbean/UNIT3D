@@ -40,6 +40,17 @@ class BetClosed extends Notification implements ShouldQueue
 
     public function toArray(object $notifiable): array
     {
+        // Defensive check to ensure bet still exists
+        if (!$this->bet || !$this->bet->exists) {
+            return [
+                'type' => 'bet_closed',
+                'title' => 'Bet Update',
+                'body' => 'A bet you participated in has been updated.',
+                'url' => null,
+                'created_at' => now()->toDateTimeString(),
+            ];
+        }
+
         return [
             'type'       => 'bet_closed',
             'bet_id'     => $this->bet->id,
@@ -47,7 +58,7 @@ class BetClosed extends Notification implements ShouldQueue
             'body'       => $this->result === 'won'
                 ? sprintf('You won %s BP on "%s".', number_format($this->amount ?? 0, 2), $this->bet->name)
                 : ($this->result === 'cancelled'
-                    ? sprintf('The bet "%s" was cancelled.', $this->bet->name)
+                    ? sprintf('The bet "%s" was cancelled and you were refunded %s BP.', $this->bet->name, number_format($this->amount ?? 0, 2))
                     : sprintf('You lost on "%s".', $this->bet->name)
                 ),
             'amount'     => $this->amount,

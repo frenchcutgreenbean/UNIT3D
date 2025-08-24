@@ -21,13 +21,26 @@ class StoreBetRequest extends FormRequest
      */
     public function rules(): array
     {
+        $allowedMinBets = config('betting.allowed_min_bets', [1000, 10000, 100000]);
+        $maxOutcomes = config('betting.max_outcomes', 5);
+        $minOutcomes = config('betting.min_outcomes', 2);
+        $maxNameLength = config('betting.validation.bet_name_max_length', 255);
+        $maxDescLength = config('betting.validation.bet_description_max_length', 2000);
+        $minDurationMinutes = config('betting.min_duration_minutes', 60);
+        $maxDurationDays = config('betting.max_duration_days', 30);
+        
         return [
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'closing_time' => 'nullable|date|after:now',
-            'min_bet' => 'required|integer|in:1000,10000,100000',
-            'outcomes' => 'required|array|min:2|max:5',
-            'outcomes.*' => 'nullable|string|max:255',
+            'name' => "required|string|max:{$maxNameLength}",
+            'description' => "nullable|string|max:{$maxDescLength}",
+            'closing_time' => [
+                'nullable',
+                'date',
+                'after:' . now()->addMinutes($minDurationMinutes)->toDateTimeString(),
+                'before:' . now()->addDays($maxDurationDays)->toDateTimeString(),
+            ],
+            'min_bet' => 'required|integer|in:' . implode(',', $allowedMinBets),
+            'outcomes' => "required|array|min:{$minOutcomes}|max:{$maxOutcomes}",
+            'outcomes.*' => 'nullable|string|max:' . config('betting.validation.outcome_name_max_length', 255),
             'is_open_ended' => 'nullable|boolean',
         ];
     }

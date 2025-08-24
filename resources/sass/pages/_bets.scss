@@ -395,8 +395,8 @@
             padding: 0 16px;
         }
 
-        .bet__outcome-entries-table thead th:nth-child(4),
-        .bet__outcome-entries-table tbody td:nth-child(4) {
+        .bet__outcome-entries-table thead th:last-child,
+        .bet__outcome-entries-table tbody td:last-child {
             display: none;
         }
 
@@ -413,6 +413,100 @@
         .bet__page_show-container .bet__main-right .close-bet-container .form__select {
             flex: 1;
         }
+    }
+}
+
+/* Badge styling */
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+
+    &.badge-secondary {
+        background: var(--bet-muted, #6c757d);
+        color: var(--bet-foreground-alt, #ffffff);
+        border: 1px solid var(--bet-overlay-03);
+    }
+
+    &.badge-warning {
+        background: var(--bet-warning, #ffc107);
+        color: var(--bet-bg, #212529);
+        border: 1px solid var(--bet-overlay-03);
+    }
+
+    &.badge-success {
+        background: var(--bet-success, #28a745);
+        color: var(--bet-foreground-alt, #ffffff);
+        border: 1px solid var(--bet-overlay-03);
+    }
+
+    &.badge-primary {
+        background: var(--bet-primary, #007bff);
+        color: var(--bet-foreground-alt, #ffffff);
+        border: 1px solid var(--bet-overlay-03);
+    }
+}
+
+/* Cancelled bet styling */
+.bet--cancelled {
+    opacity: 0.75;
+    background-color: var(--bet-overlay-02);
+    
+    &:hover {
+        background-color: var(--bet-overlay-03);
+    }
+}
+
+.bet__outcome--cancelled {
+    opacity: 0.8;
+    border-left: 3px solid var(--bet-muted);
+    background: var(--bet-overlay-01);
+    
+    .bet__outcome-header {
+        color: var(--bet-muted);
+    }
+    
+    .bet__outcome-stats {
+        color: var(--bet-muted-weak, #aaa);
+    }
+}
+
+/* Alert styles */
+.bet-cancelled-alert {
+    background: var(--bet-overlay-02);
+    border: var(--bet-border);
+    color: var(--bet-danger, #dc3545);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    
+    strong {
+        color: var(--bet-danger, #dc3545);
+    }
+}
+
+.bet-completed-alert {
+    background: var(--bet-overlay-02);
+    border: var(--bet-border);
+    color: var(--bet-success, #28a745);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    
+    strong {
+        color: var(--bet-success, #28a745);
+    }
+}
+
+.bet-expired-alert {
+    background: var(--bet-overlay-02);
+    border: var(--bet-border);
+    color: var(--bet-warning, #ffc107);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    
+    strong {
+        color: var(--bet-warning, #ffc107);
     }
 }
 

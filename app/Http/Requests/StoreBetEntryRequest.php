@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\BetStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,7 @@ class StoreBetEntryRequest extends FormRequest
             return false;
         }
 
-        if ($bet->status !== 'open') {
+        if ($bet->status !== BetStatus::OPEN) {
             return false;
         }
 
@@ -35,8 +36,9 @@ class StoreBetEntryRequest extends FormRequest
     public function rules(Request $request): array
     {
         $bet = $request->route('bet');
-        $minBet = $bet ? $bet->min_bet : 1000;
-        $maxBet = $bet ? $bet->min_bet * 10 : 10000;
+        $minBet = $bet ? $bet->min_bet : config('betting.default_min_bet', 1000);
+        $maxBonAmount = config('betting.max_bon_amount', 10000000);
+        $userBonus = $request->user()->seedbonus ?? 0;
         
         return [
             'bet_outcome_id' => [
@@ -52,7 +54,7 @@ class StoreBetEntryRequest extends FormRequest
                 'required',
                 'numeric',
                 'min:' . $minBet,
-                'max:' . min($maxBet, $request->user()->seedbonus ?? 0),
+                'max:' . min($maxBonAmount, $userBonus),
             ],
             'anon' => [
                 'nullable',
@@ -81,7 +83,7 @@ class StoreBetEntryRequest extends FormRequest
             }
             
             // Check if bet is still open
-            if ($bet && $bet->status !== 'open') {
+            if ($bet && $bet->status !== BetStatus::OPEN) {
                 $validator->errors()->add('bet_outcome_id', 'This bet is no longer accepting entries.');
             }
             

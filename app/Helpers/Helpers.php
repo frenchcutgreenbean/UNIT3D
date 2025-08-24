@@ -249,17 +249,23 @@ if (!\function_exists('can_bet')) {
     {
         $user = $user ?? auth()->user();
 
-        if (! $user) {
+        if (!$user) {
             return false;
         }
 
-        // explicit user flag overrides group
-        if (isset($user->can_bet)) {
-            return (bool) $user->can_bet;
-        }
+        // Create cache key for this specific user and bet combination
+        $cacheKey = 'can_bet_' . $user->id . '_' . ($bet ? $bet->id : 'general');
+        $cacheDuration = config('betting.cache_duration_minutes', 5);
+        
+        return cache()->remember($cacheKey, now()->addMinutes($cacheDuration), function () use ($user, $bet) {
+            // explicit user flag overrides group
+            if (isset($user->can_bet)) {
+                return (bool) $user->can_bet;
+            }
 
-        // fall back to group permission if present
-        return (bool) ($user->group->can_bet ?? false);
+            // fall back to group permission if present
+            return (bool) ($user->group->can_bet ?? false);
+        });
     }
 }
 
@@ -272,26 +278,31 @@ if (!\function_exists('can_edit_bet')) {
     {
         $user = $user ?? auth()->user();
 
-        if (! $user) {
+        if (!$user) {
             return false;
         }
 
-        // Creator can edit if no wagers exist (ensure $bet exists)
-        if ($bet && $bet->user_id === $user->id && $bet->canBeEdited()) {
-            return true;
-        }
+        // Cache key includes bet ID for specific bet checks
+        $cacheKey = 'can_edit_bet_' . $user->id . '_' . ($bet ? $bet->id : 'general');
+        
+        return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($user, $bet) {
+            // Creator can edit if no wagers exist (ensure $bet exists)
+            if ($bet && $bet->user_id === $user->id && $bet->canBeEdited()) {
+                return true;
+            }
 
-        // Moderators can edit any bet (use existing flag name)
-        if (! empty($user->group->is_modo)) {
-            return true;
-        }
+            // Moderators can edit any bet (use existing flag name)
+            if (!empty($user->group->is_modo)) {
+                return true;
+            }
 
-        // explicit flags
-        if (isset($user->can_edit_bet)) {
-            return (bool) $user->can_edit_bet;
-        }
+            // explicit flags
+            if (isset($user->can_edit_bet)) {
+                return (bool) $user->can_edit_bet;
+            }
 
-        return (bool) ($user->group->can_edit_bet ?? false);
+            return (bool) ($user->group->can_edit_bet ?? false);
+        });
     }
 }
 
@@ -303,15 +314,30 @@ if (!\function_exists('can_create_bet')) {
     {
         $user = $user ?? auth()->user();
 
-        if (! $user) {
+        if (!$user) {
             return false;
         }
 
-        if (isset($user->can_create_bet)) {
-            return (bool) $user->can_create_bet;
-        }
+        $cacheKey = 'can_create_bet_' . $user->id;
+        $cacheDuration = config('betting.cache_duration_minutes', 5);
+        
+        return cache()->remember($cacheKey, now()->addMinutes($cacheDuration), function () use ($user) {
+            if (isset($user->can_create_bet)) {
+                return (bool) $user->can_create_bet;
+            }
 
-        return (bool) ($user->group->can_create_bet ?? false);
+            // Check daily limit
+            $dailyLimit = config('betting.rate_limiting.create_bets_per_day', 5);
+            $todayCount = \App\Models\Bet::where('user_id', $user->id)
+                ->whereDate('created_at', today())
+                ->count();
+                
+            if ($todayCount >= $dailyLimit) {
+                return false;
+            }
+
+            return (bool) ($user->group->can_create_bet ?? false);
+        });
     }
 }
 
@@ -323,20 +349,25 @@ if (!\function_exists('can_close_bet')) {
     {
         $user = $user ?? auth()->user();
 
-        if (! $user) {
+        if (!$user) {
             return false;
         }
 
-        // moderators always can
-        if (!empty($user->group->is_modo)) {
-            return true;
-        }
+        $cacheKey = 'can_close_bet_' . $user->id . '_' . ($bet ? $bet->id : 'general');
+        $cacheDuration = config('betting.cache_duration_minutes', 5);
+        
+        return cache()->remember($cacheKey, now()->addMinutes($cacheDuration), function () use ($user, $bet) {
+            // moderators always can
+            if (!empty($user->group->is_modo)) {
+                return true;
+            }
 
-        if ($bet && ($bet->user_id === $user->id) && ($user->can_close_bet ?? $user->group->can_close_bet)) {
-            return true;
-        }
+            if ($bet && ($bet->user_id === $user->id) && ($user->can_close_bet ?? $user->group->can_close_bet)) {
+                return true;
+            }
 
-        return false;
+            return false;
+        });
     }
 }
 
@@ -349,24 +380,29 @@ if (!\function_exists('can_delete_bet')) {
     {
         $user = $user ?? auth()->user();
 
-        if (! $user || ! $bet) {
+        if (!$user || !$bet) {
             return false;
         }
 
-        // moderators always can
-        if (! empty($user->group->is_modo)) {
-            return true;
-        }
+        $cacheKey = 'can_delete_bet_' . $user->id . '_' . $bet->id;
+        $cacheDuration = config('betting.cache_duration_minutes', 5);
+        
+        return cache()->remember($cacheKey, now()->addMinutes($cacheDuration), function () use ($user, $bet) {
+            // moderators always can
+            if (!empty($user->group->is_modo)) {
+                return true;
+            }
 
-        if (isset($user->can_delete_bet)) {
-            return (bool) $user->can_delete_bet;
-        }
+            if (isset($user->can_delete_bet)) {
+                return (bool) $user->can_delete_bet;
+            }
 
-        // bet owner can delete their own bet if no entries (example rule)
-        if ($bet->user_id === $user->id && $bet->canBeEdited()) {
-            return true;
-        }
+            // bet owner can delete their own bet if no entries (example rule)
+            if ($bet->user_id === $user->id && $bet->canBeEdited()) {
+                return true;
+            }
 
-        return (bool) ($user->group->can_delete_bet ?? false);
+            return (bool) ($user->group->can_delete_bet ?? false);
+        });
     }
 }

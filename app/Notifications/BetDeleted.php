@@ -39,11 +39,15 @@ class BetDeleted extends Notification implements ShouldQueue
 
     public function toArray(object $notifiable): array
     {
+        // Defensive check for empty bet name
+        $betName = $this->betName ?: 'Unknown Bet';
+        $amount = max(0, $this->amount); // Ensure amount is never negative
+        
         return [
             'type'       => 'bet_deleted',
             'title'      => 'Bet Cancelled & Refunded',
-            'body'       => sprintf('Bet "%s" was deleted and you were refunded %s BP.', $this->betName, number_format($this->amount, 2)),
-            'amount'     => $this->amount,
+            'body'       => sprintf('Bet "%s" was deleted and you were refunded %s BP.', $betName, number_format($amount, 2)),
+            'amount'     => $amount,
             'result'     => 'deleted',
             'url'        => null,
             'created_at' => now()->toDateTimeString(),
