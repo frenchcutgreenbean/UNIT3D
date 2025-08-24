@@ -139,6 +139,14 @@ class StoreGroupRequest extends FormRequest
                 'required',
                 'boolean',
             ],
+            'group.can_create_bet' => [
+                'required',
+                'boolean',
+            ],
+            'group.can_close_bet' => [
+                'required',
+                'boolean',
+            ],
             'group.autogroup' => [
                 'required',
                 'boolean',
