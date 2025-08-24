@@ -27,7 +27,7 @@
         <div class="bet__header-container">
             <h1 class="bet__header-title"> <a href="/bets">Bets</a>
                 {{-- Edit/Delete buttons for bet creator when no entries exist --}}
-                @if ($user && (($bet->user_id === $user->id && $bet->canBeEdited()) || ($user->group->is_modo && $bet->canBeEdited())))
+                @if (can_edit_bet($user, $bet) && $bet->status !== 'completed')
                     | <a href="{{ route('bets.edit', $bet->id) }}">Edit</a>
                 @endif
             </h1>
@@ -36,7 +36,7 @@
             <div class="bet__info">
                 <h1 class="bet__title">{{ $bet->name }}</h1>
             </div>
-            @if ($user->group->is_modo)
+            @if (can_delete_bet($user, $bet))
                 <form method="POST" action="{{ route('bets.destroy', $bet->id) }}" class="inline-form"
                     onsubmit="return confirm('Are you sure you want to delete this bet?')">
                     @csrf
@@ -117,7 +117,7 @@
                         class="fas {{ $bet->status === 'completed' || $bet->hasExpired() ? 'fa-lock' : 'fa-lock-open' }}"></i>
                 </div>
                 {{-- Moderator controls --}}
-                @if ($user && $user->group->is_modo && $bet->status !== 'completed')
+                @if (can_close_bet($user, $bet) && $bet->status !== 'completed')
                     <div class="bet__mod-controls">
                         <form method="POST" action="{{ route('bets.close', $bet->id) }}" class="close-bet-form">
                             @csrf
@@ -153,16 +153,23 @@
                         @endif
                     </h3>
 
+                    @php
+                        $outcomeTotal = $outcome->entries->sum('amount');
+                        $totalPot = $bet->pot_size;
+                    @endphp
+
                     @if ($outcome->entries->count() > 0)
                         <table class="bet__outcome-entries-table">
                             <thead>
                                 <tr>
                                     <th>Member</th>
                                     <th>Bet Amount</th>
-                                    <th>When</th>
                                     @if ($bet->status === 'completed')
                                         <th>Payout</th>
+                                    @else
+                                        <th>Expected Payout</th>
                                     @endif
+                                    <th>When</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -172,17 +179,26 @@
                                             <x-user-tag :user="$entry->user" :anon="$entry->anon" />
                                         </td>
                                         <td>{{ number_format($entry->amount) }} BP</td>
-                                        <td>{{ $entry->created_at->diffForHumans() }}</td>
+
                                         @if ($bet->status === 'completed')
                                             <td>
                                                 @if ($entry->payout)
-                                                    <span class="text-success">{{ number_format($entry->payout) }}
-                                                        BP</span>
+                                                    <span class="text-success">{{ number_format($entry->payout, 2) }} BP</span>
                                                 @else
                                                     <span class="text-muted">No payout</span>
                                                 @endif
                                             </td>
+                                        @else
+                                            <td>
+                                                @if ($outcomeTotal > 0)
+                                                    {{ number_format((float) $entry->amount / $outcomeTotal * $totalPot, 2) }} BP
+                                                @else
+                                                    <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
                                         @endif
+
+                                        <td>{{ $entry->created_at->diffForHumans() }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -192,7 +208,7 @@
                     @endif
 
                     {{-- Betting form --}}
-                    @if ($user && !$userHasAlreadyBet && $bet->isOpenForBetting() && $bet->status === 'open')
+                    @if (can_bet($user, $bet) && !$userHasAlreadyBet && $bet->isOpenForBetting() && $bet->status === 'open')
                         <div class="bet__betting-form-container">
                             <form method="POST" action="{{ route('bets.entries.store', $bet->id) }}">
                                 @csrf
@@ -225,5 +241,6 @@
                 </div>
             @endforeach
         </div>
+        <livewire:comments :model="$bet" />
     </div>
 @endsection

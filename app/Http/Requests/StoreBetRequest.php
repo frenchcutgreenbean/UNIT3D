@@ -11,7 +11,7 @@ class StoreBetRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return can_create_bet($this->user());
     }
 
     /**

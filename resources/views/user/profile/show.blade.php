@@ -1156,6 +1156,48 @@
                         </dd>
                     </div>
                     <div class="key-value__group">
+                        <dt>{{ __('user.can-bet') }}</dt>
+                        <dd>
+                            @if ($user->can_bet ?? $user->group->can_bet)
+                                <i
+                                    class="{{ config('other.font-awesome') }} fa-check text-green"
+                                ></i>
+                            @else
+                                <i
+                                    class="{{ config('other.font-awesome') }} fa-times text-red"
+                                ></i>
+                            @endif
+                        </dd>
+                    </div>
+                    <div class="key-value__group">
+                        <dt>{{ __('user.can-create-bet') }}</dt>
+                        <dd>
+                            @if ($user->can_create_bet ?? $user->group->can_create_bet)
+                                <i
+                                    class="{{ config('other.font-awesome') }} fa-check text-green"
+                                ></i>
+                            @else
+                                <i
+                                    class="{{ config('other.font-awesome') }} fa-times text-red"
+                                ></i>
+                            @endif
+                        </dd>
+                    </div>
+                    <div class="key-value__group">
+                        <dt>{{ __('user.can-close-bet') }}</dt>
+                        <dd>
+                            @if ($user->can_close_bet ?? $user->group->can_close_bet)
+                                <i
+                                    class="{{ config('other.font-awesome') }} fa-check text-green"
+                                ></i>
+                            @else
+                                <i
+                                    class="{{ config('other.font-awesome') }} fa-times text-red"
+                                ></i>
+                            @endif
+                        </dd>
+                    </div>
+                    <div class="key-value__group">
                         <dt>{{ __('user.can-invite') }}</dt>
                         <dd>
                             @if (($user->can_invite ?? $user->group->can_invite) && $user->two_factor_confirmed_at !== null)

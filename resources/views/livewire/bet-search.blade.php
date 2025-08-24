@@ -1,6 +1,10 @@
 <div class="bet__index-container">
     <div class="bet__header-container">
-        <h1 class="bet__header-title">Bets | <a href="/bets/create">New</a></h1>
+        <h1 class="bet__header-title">Bets
+            @if (can_create_bet($user))
+                | <a href="/bets/create">New</a>
+            @endif
+        </h1>
         
     </div>
         <div class="bet__sub-nav-container">

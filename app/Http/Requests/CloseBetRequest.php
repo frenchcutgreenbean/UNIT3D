@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Staff;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -8,7 +8,8 @@ class CloseBetRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->group->is_modo;
+        // allow moderators or users allowed by can_close_bet (owner override etc.)
+        return can_close_bet($this->user(), $this->route('bet'));
     }
 
     public function rules(): array
@@ -44,9 +45,6 @@ class CloseBetRequest extends FormRequest
             if ($bet && $bet->status === 'completed') {
                 $validator->errors()->add('winner_outcome_id', 'This bet has already been completed.');
             }
-            
-            // Check if bet has any entries (removed the restriction - mods can close bets with no entries)
-            // This allows mods to close/cancel bets even without entries if needed
         });
     }
 }

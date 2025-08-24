@@ -194,8 +194,10 @@
                     override_can_chat: {{ Js::from($user->can_chat !== null) }},
                     override_can_invite: {{ Js::from($user->can_invite !== null) }},
                     override_can_request: {{ Js::from($user->can_request !== null) }},
-                    override_can_bet: {{ Js::from($user->can_bet !== null) }},
                     override_can_upload: {{ Js::from($user->can_upload !== null) }},
+                    override_can_bet: {{ Js::from($user->can_bet !== null) }},
+                    override_can_create_bet: {{ Js::from($user->can_create_bet !== null) }},
+                    override_can_close_bet: {{ Js::from($user->can_close_bet !== null) }},
                 }"
             >
                 @csrf
@@ -319,6 +321,7 @@
                     </fieldset>
                 </div>
                 <p class="form__group">
+                    <input type="hidden" name="can_upload" value="0" />
                     <input
                         id="override_can_upload"
                         class="form__checkbox"
@@ -345,6 +348,93 @@
                             @checked($user->can_upload)
                         />
                         <label for="can_upload">{{ __('user.can-upload') }}?</label>
+                    </fieldset>
+                </div>
+                <p class="form__group">
+                    <input
+                        id="override_can_bet"
+                        class="form__checkbox"
+                        type="checkbox"
+                        x-bind:checked="override_can_bet"
+                        x-model="override_can_bet"
+                    />
+                    <label for="override_can_bet">Override Group Can Bet</label>
+                </p>
+                <div class="form__group" x-show="override_can_bet" x-cloak>
+                    <fieldset class="form__fieldset">
+                        <input
+                            type="hidden"
+                            name="can_bet"
+                            x-bind:value="override_can_bet ? '0' : ''"
+                        />
+                        <input
+                            type="checkbox"
+                            class="form__checkbox"
+                            id="can_bet"
+                            name="can_bet"
+                            value="1"
+                            x-bind:checked="override_can_bet && $el.checked"
+                            @checked($user->can_bet)
+                        />
+                        <label for="can_bet">{{ __('user.can-bet') }}?</label>
+                    </fieldset>
+                </div>
+                <p class="form__group">
+                    <input
+                        id="override_can_create_bet"
+                        class="form__checkbox"
+                        type="checkbox"
+                        x-bind:checked="override_can_create_bet"
+                        x-model="override_can_create_bet"
+                    />
+                    <label for="override_can_create_bet">Override Group Can Create Bet</label>
+                </p>
+                <div class="form__group" x-show="override_can_create_bet" x-cloak>
+                    <fieldset class="form__fieldset">
+                        <input
+                            type="hidden"
+                            name="can_create_bet"
+                            x-bind:value="override_can_create_bet ? '0' : ''"
+                        />
+                        <input
+                            type="checkbox"
+                            class="form__checkbox"
+                            id="can_create_bet"
+                            name="can_create_bet"
+                            value="1"
+                            x-bind:checked="override_can_create_bet && $el.checked"
+                            @checked($user->can_create_bet)
+                        />
+                        <label for="can_create_bet">{{ __('user.can-create-bet') }}?</label>
+                    </fieldset>
+                </div>
+                <p class="form__group">
+                    <input
+                        id="override_can_close_bet"
+                        class="form__checkbox"
+                        type="checkbox"
+                        x-bind:checked="override_can_close_bet"
+                        x-model="override_can_close_bet"
+                    />
+                    <label for="override_can_close_bet">Override Group Can Close Bet</label>
+                </p>
+                <div class="form__group" x-show="override_can_close_bet" x-cloak>
+                    <fieldset class="form__fieldset">
+                        <input
+                            type="hidden"
+                            name="can_close_bet"
+                            x-bind:value="override_can_close_bet ? '0' : ''"
+                        />
+                        <input
+                            type="checkbox"
+                            class="form__checkbox"
+                            id="can_close_bet"
+                            name="can_close_bet"
+                            value="1"
+                            x-bind:checked="override_can_close_bet && $el.checked"
+                            @checked($user->can_close_bet)
+                        />
+                        <label for="can_close_bet">{{ __('user.can-close-bet') }}?</label>
                     </fieldset>
                 </div>
                 <p class="form__group">

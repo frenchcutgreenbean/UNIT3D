@@ -9,7 +9,27 @@ class StoreBetEntryRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Add more logic if needed
+        $user = $this->user();
+        $bet = $this->route('bet');
+
+        if (! $user || ! $bet) {
+            return false;
+        }
+
+        // user must be allowed to bet and bet must be open
+        if (! can_bet($user, $bet)) {
+            return false;
+        }
+
+        if ($bet->status !== 'open') {
+            return false;
+        }
+
+        if ($bet->closing_time && now()->gt($bet->closing_time)) {
+            return false;
+        }
+
+        return true;
     }
 
     public function rules(Request $request): array
