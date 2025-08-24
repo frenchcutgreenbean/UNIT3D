@@ -18,6 +18,6 @@ class BetObserver
             ? '[url=' . href_profile($user) . ']' . $user->username . '[/url]'
             : 'A user';
 
-        $chat->systemMessage($username . ' has created a new bet [url=' . href_bet($bet) . ']' . $bet->name . '[/url]');
+        $chat->systemMessage($username . ' has created a new Bet [url=' . href_bet($bet) . ']' . $bet->name . '[/url]');
     }
 }
