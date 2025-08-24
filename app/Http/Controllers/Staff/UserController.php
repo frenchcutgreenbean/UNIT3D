@@ -99,6 +99,8 @@ class UserController extends Controller
             'can_request' => $request->filled('can_request') ? $request->boolean('can_request') : null,
             'can_upload'  => $request->filled('can_upload') ? $request->boolean('can_upload') : null,
             'can_bet'     => $request->filled('can_bet') ? $request->boolean('can_bet') : null,
+            'can_create_bet'     => $request->filled('can_create_bet') ? $request->boolean('can_create_bet') : null,
+            'can_close_bet'     => $request->filled('can_close_bet') ? $request->boolean('can_close_bet') : null,
             'is_donor'    => $request->boolean('is_donor'),
             'is_lifetime' => $request->boolean('is_lifetime'),
         ]);

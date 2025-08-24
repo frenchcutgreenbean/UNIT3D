@@ -45,6 +45,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Models\Bet;
 
 class Comments extends Component
 {
@@ -56,7 +57,7 @@ class Comments extends Component
 
     public ?User $user;
 
-    public null|Article|TmdbCollection|Playlist|Ticket|Torrent|TorrentRequest $model;
+    public null|Article|TmdbCollection|Playlist|Ticket|Torrent|TorrentRequest|Bet $model;
 
     public bool $anon = false;
 
@@ -140,6 +141,7 @@ class Comments extends Component
             case $this->model instanceof Playlist:
             case $this->model instanceof TorrentRequest:
             case $this->model instanceof Torrent:
+            case $this->model instanceof Bet:
                 User::find($this->model->user_id)?->notify(new NewComment($this->model, $comment));
 
                 break;
@@ -172,7 +174,9 @@ class Comments extends Component
                     break;
                 case $this->model instanceof Torrent:
                     $this->chatRepository->systemMessage($username.' has left a comment on Torrent [url='.href_torrent($this->model).']'.$this->model->name.'[/url]');
-
+                    break;
+                case $this->model instanceof Bet:
+                    $this->chatRepository->systemMessage($username.' has left a comment on Bet [url='.href_bet($this->model).']'.$this->model->name.'[/url]');
                     break;
             }
 

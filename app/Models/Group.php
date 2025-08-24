@@ -50,6 +50,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool     $can_invite
  * @property bool     $can_request
  * @property bool     $can_upload
+ * @property bool     $can_bet
+ * @property bool     $can_create_bet
+ * @property bool     $can_close_bet
  * @property bool     $is_incognito
  * @property bool     $autogroup
  * @property bool     $system_required
@@ -115,6 +118,8 @@ class Group extends Model
             'can_request'      => 'bool',
             'can_upload'       => 'bool',
             'can_bet'          => 'bool',
+            'can_create_bet'   => 'bool',
+            'can_close_bet'    => 'bool',
             'is_incognito'     => 'bool',
             'autogroup'        => 'bool',
             'system_required'  => 'bool',
@@ -141,6 +146,8 @@ class Group extends Model
             'can_comment'   => 'Comment',
             'can_invite'    => 'Invite',
             'can_bet'       => 'Can Bet',
+            'can_create_bet'   => 'Can Create Bet',
+            'can_close_bet'    => 'Can Close Bet',
             'can_request'   => 'Request',
             'can_upload'    => 'Upload',
             'autogroup'     => 'Autogroup',

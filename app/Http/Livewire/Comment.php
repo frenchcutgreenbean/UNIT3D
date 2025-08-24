@@ -36,6 +36,7 @@ use App\Models\Ticket;
 use App\Models\Torrent;
 use App\Models\TorrentRequest;
 use App\Models\User;
+use App\Models\Bet;
 use App\Notifications\NewComment;
 use App\Notifications\NewCommentTag;
 use App\Repositories\ChatRepository;
@@ -49,7 +50,7 @@ class Comment extends Component
 
     protected ChatRepository $chatRepository;
 
-    public null|Article|TmdbCollection|Playlist|Ticket|Torrent|TorrentRequest $model;
+    public null|Article|TmdbCollection|Playlist|Ticket|Torrent|TorrentRequest|Bet $model;
 
     public \App\Models\Comment $comment;
 
@@ -175,6 +176,7 @@ class Comment extends Component
             case $this->model instanceof Playlist:
             case $this->model instanceof TorrentRequest:
             case $this->model instanceof Torrent:
+            case $this->model instanceof Bet:
                 if ($this->user->id !== $this->model->user_id) {
                     User::find($this->model->user_id)?->notify(new NewComment($this->model, $reply));
                 }

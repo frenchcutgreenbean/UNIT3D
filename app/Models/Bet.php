@@ -3,7 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
+
+/**
+ * App\Models\Bet
+ *
+ * @property int    $id
+ * @property string $name
+ * @property int    $user_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 
 class Bet extends Model
 {
@@ -66,6 +78,15 @@ class Bet extends Model
     {
             return $this->hasMany(BetOutcome::class);
         }
+  /**
+     * Polymorphic comments relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Comment>
+     */
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 
     /**
      * Has many entries (bets placed).

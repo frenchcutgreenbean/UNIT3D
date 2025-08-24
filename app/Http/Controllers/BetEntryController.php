@@ -17,8 +17,8 @@ class BetEntryController extends Controller
     {
         $user = $request->user();
 
-        // Only allow if bet is open and user can bet
-        if ($bet->is_closed || !$user->can_bet || now()->gt($bet->closing_time)) {
+        // Only allow if bet is open and user can bet (use helper)
+        if ($bet->is_closed || ! can_bet($user, $bet) || ($bet->closing_time && now()->gt($bet->closing_time))) {
             return back()->withErrors(['bet' => 'Bet is closed or you cannot bet.']);
         }
 

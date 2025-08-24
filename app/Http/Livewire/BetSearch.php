@@ -56,9 +56,10 @@ class BetSearch extends Component
     
     public function render()
     {
+        $user = auth()->user();
+
         $bets = Bet::query()
             ->with(['user', 'entries', 'outcomes'])
-            // add DB-side counter so we can order by it in SQL
             ->withCount(['entries as total_entries'])
             ->when($this->activeTab === 'open', function($q) {
                 return $q->where('status', 'open')
@@ -103,6 +104,9 @@ class BetSearch extends Component
                   fn($q) => $q->orderBy($this->sortField, $this->sortDirection))
             ->paginate($this->perPage);
 
-        return view('livewire.bet-search', compact('bets'));
+        // safe numeric start index for numbering, avoid doing arithmetic with the paginator itself
+        $startIndex = ($bets->currentPage() - 1) * $bets->perPage();
+
+        return view('livewire.bet-search', compact('bets', 'user', 'startIndex'));
     }
 }

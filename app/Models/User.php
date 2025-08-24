@@ -58,6 +58,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property bool                            $can_request
  * @property bool                            $can_invite
  * @property bool                            $can_upload
+ * @property bool                            $can_bet
+ * @property bool                            $can_create_bet
+ * @property bool                            $can_close_bet
  * @property bool                            $is_donor
  * @property bool                            $is_lifetime
  * @property string|null                     $remember_token
@@ -141,6 +144,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'can_upload'              => 'bool',
             'can_chat'                => 'bool',
             'can_bet'                 => 'bool',
+            'can_create_bet'          => 'bool',
+            'can_close_bet'           => 'bool',
             'is_donor'                => 'bool',
             'is_lifetime'             => 'bool',
         ];

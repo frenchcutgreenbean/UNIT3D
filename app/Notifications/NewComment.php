@@ -23,6 +23,7 @@ use App\Models\Ticket;
 use App\Models\Torrent;
 use App\Models\TorrentRequest;
 use App\Models\User;
+use App\Models\Bet;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
@@ -33,7 +34,7 @@ class NewComment extends Notification
     /**
      * NewComment Constructor.
      */
-    public function __construct(public Torrent|TorrentRequest|Ticket|Playlist|Article $model, public Comment $comment)
+    public function __construct(public Torrent|TorrentRequest|Ticket|Playlist|Article|Bet $model, public Comment $comment)
     {
     }
 
@@ -132,6 +133,11 @@ class NewComment extends Notification
                 'title' => 'New Article Comment Received',
                 'body'  => $username.' has left a comment on article '.$this->model->title,
                 'url'   => '/articles/'.$this->model->id.'#comment-'.$this->comment->id,
+            ],
+            $this->model instanceof Bet => [
+                'title' => 'New Bet Comment Received',
+                'body'  => $username.' has left a comment on bet '.$this->model->name,
+                'url'   => '/bets/'.$this->model->id.'#comment-'.$this->comment->id,
             ],
         };
     }

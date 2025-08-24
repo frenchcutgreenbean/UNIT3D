@@ -24,6 +24,7 @@ use App\Models\Ticket;
 use App\Models\Torrent;
 use App\Models\TorrentRequest;
 use App\Models\User;
+use App\Models\Bet;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -35,7 +36,7 @@ class NewCommentTag extends Notification implements ShouldQueue
     /**
      * NewCommentTag Constructor.
      */
-    public function __construct(public Torrent|TorrentRequest|Ticket|Playlist|TmdbCollection|Article $model, public Comment $comment)
+    public function __construct(public Torrent|TorrentRequest|Ticket|Playlist|TmdbCollection|Article|Bet $model, public Comment $comment)
     {
     }
 
@@ -146,6 +147,11 @@ class NewCommentTag extends Notification implements ShouldQueue
                 'title' => $title,
                 'body'  => $username.' has tagged you in an comment on Article '.$this->model->title,
                 'url'   => '/articles/'.$this->model->id,
+            ],
+            $this->model instanceof Bet => [
+                'title' => $title,
+                'body'  => $username.' has tagged you in an comment on Bet '.$this->model->name,
+                'url'   => '/bets/'.$this->model->id,
             ],
         };
     }

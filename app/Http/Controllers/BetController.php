@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBetRequest;
 use App\Http\Requests\StoreBetEntryRequest;
-use App\Http\Requests\Staff\CloseBetRequest;
+use App\Http\Requests\CloseBetRequest;
 use App\Models\Bet;
 use App\Models\BetEntry;
 use App\Models\BetOutcome;
@@ -29,17 +29,21 @@ class BetController extends Controller
      */
     public function create(Request $request)
     {
+        abort_unless(can_create_bet($request->user()), 403);
+
         return view('bets.create', [
             'user' => $request->user(),
         ]);
     }
-
+    
     /**
      * Store a newly created bet in the database.
      */
     public function store(StoreBetRequest $request)
     {
         $user = $request->user();
+        abort_unless(can_create_bet($user), 403);
+
         $validated = $request->validated();
         
         // Handle open-ended logic
@@ -94,16 +98,12 @@ class BetController extends Controller
      */
     public function edit(Request $request, Bet $bet)
     {
-        // Only allow editing if no bets have been placed and user is the creator
-        if ($bet->user_id !== $request->user()->id) {
-            abort(403, 'You can only edit your own bets.');
-        }
-        
+        abort_unless(can_edit_bet($request->user(), $bet), 403);
         if ($bet->entries()->count() > 0) {
             return redirect()->route('bets.show', $bet->id)
                 ->with('error', 'Cannot edit bet after entries have been made.');
         }
-
+ 
         return view('bets.edit', [
             'bet' => $bet,
             'user' => $request->user(),
@@ -115,11 +115,7 @@ class BetController extends Controller
      */
     public function update(StoreBetRequest $request, Bet $bet)
     {
-        // Only allow editing if no bets have been placed and user is the creator
-        if ($bet->user_id !== $request->user()->id) {
-            abort(403, 'You can only edit your own bets.');
-        }
-        
+        abort_unless(can_edit_bet($request->user(), $bet), 403);
         if ($bet->entries()->count() > 0) {
             return redirect()->route('bets.show', $bet->id)
                 ->with('error', 'Cannot edit bet after entries have been made.');
@@ -149,17 +145,11 @@ class BetController extends Controller
     public function destroy(Request $request, Bet $bet)
     {
         $user = $request->user();
-        
-        // Allow deletion if no bets have been placed AND (user is creator OR user is moderator)
         if ($bet->entries()->count() > 0) {
             return redirect()->route('bets.show', $bet->id)
                 ->with('error', 'Cannot delete bet after entries have been made.');
         }
-        
-        // Check permissions: owner or moderator
-        if ($bet->user_id !== $user->id && !$user->group->is_modo) {
-            abort(403, 'You can only delete your own bets unless you are a moderator.');
-        }
+        abort_unless(can_delete_bet($user, $bet), 403);
 
         $bet->delete();
 
@@ -195,6 +185,7 @@ class BetController extends Controller
      */
     public function close(CloseBetRequest $request, Bet $bet)
     {
+        abort_unless(can_close_bet($request->user(), $bet), 403);
         $validated = $request->validated();
         
         // Update bet status and winner
@@ -208,7 +199,7 @@ class BetController extends Controller
 
         // --- notify participants of result ---
         $winnerId = $validated['winner_outcome_id'];
-        $entries = $bet->entries()->with('user')->get(); // all entries with users
+        $entries = $bet->entries()->with('user')->get();
 
         foreach ($entries->groupBy('user_id') as $userEntries) {
             $user = $userEntries->first()->user;
@@ -219,14 +210,12 @@ class BetController extends Controller
             $userWinningEntries = $userEntries->where('bet_outcome_id', $winnerId);
 
             if ($userWinningEntries->isNotEmpty()) {
-                // prefer stored payout (distributePayout sets 'payout'), fallback to sum
                 $payout = $userWinningEntries->sum('payout') ?: 0;
                 $user->notify(new BetClosed('won', $bet, (float) $payout));
             } else {
                 $user->notify(new BetClosed('lost', $bet, null));
             }
         }
-        // --- end notify ---
 
         return redirect()->route('bets.show', $bet->id)
             ->with('success', 'Bet has been closed and payouts distributed!');
