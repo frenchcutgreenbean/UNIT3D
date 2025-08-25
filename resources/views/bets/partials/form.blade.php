@@ -8,10 +8,17 @@
             @method($method)
         @endif
 
+    @php
+        $hasEntries = isset($bet) && $bet->entries()->count() > 0;
+        $isModerator = auth()->check() && !empty(auth()->user()->group->is_modo);
+        $canEditWithEntries = $hasEntries && $isModerator;
+        $isEditingWithEntries = $hasEntries && isset($method) && $method !== 'POST';
+    @endphp
+
     <div class="bet__name-container">
             <label for="name">Bet</label>
             <input class="form__text" type="text" name="name" id="name"
-                placeholder="Example: Izzy vs Strickland in UFC 300 (required)"
+                placeholder="Example: Izzy vs Strickland in UFC 293 (required)"
                 value="{{ old('name', $bet->name ?? '') }}" required>
             <small>Enter a title for the bet.</small>
         </div>
@@ -26,9 +33,14 @@
     <div class="bet__outcomes-container">
             <label>Possible Outcomes</label>
                 <small>
+                    @if ($isEditingWithEntries)
+                        <strong class="text-warning">⚠️ Warning:</strong> This bet has existing entries. Adding outcomes is allowed, but removing or significantly changing outcomes may affect existing bets.<br>
+                    @endif
                     Provide {{ config('betting.min_outcomes', 2) }} to {{ config('betting.max_outcomes', 5) }} possible outcomes for this bet.<br>
                     For example, list the teams, nominees, or choices members can wager on.<br>
-                    You can edit outcomes until the first wager is placed.
+                    @if (!$hasEntries)
+                        You can edit outcomes until the first wager is placed.
+                    @endif
                 </small>
             <div class="bet__outcomes-options-container">
                 @for ($i = 1; $i <= config('betting.max_outcomes', 5); $i++)
@@ -44,12 +56,26 @@
             <label for="payout_info">Payouts</label>
                 <small>
                     Winners share the total pot for their chosen outcome, divided proportionally by the amount each member bet.<br>
-                    For example, if three users bet on the winning outcome, each receives a percentage of the pot equal to their contribution.<br>
+                    @php $houseEdge = config('betting.payout.house_edge', 0.0); @endphp
+                    @if ($houseEdge > 0.0)
+                        <strong>House Edge:</strong> {{ number_format($houseEdge * 100, 1) }}% of the total pot is retained by the site, so winners receive {{ number_format((1 - $houseEdge) * 100, 1) }}% of the pot.<br>
+                    @endif
+                    For example, if three users bet on the winning outcome, each receives a percentage of the {{ $houseEdge > 0.0 ? 'remaining' : '' }} pot equal to their contribution.<br>
                     The minimum and maximum bet amounts help ensure fair participation for all members.
                 </small>
         </div>
 
-    <div id="min_bet_virtual_select"></div>
+    @if (!$hasEntries)
+        <div id="min_bet_virtual_select"></div>
+    @else
+        <div class="bet__min-bet-display">
+            <label>Bet Range (Cannot be changed after entries are made)</label>
+            <div class="form__text-static">
+                {{ number_format($bet->min_bet ?? 0) }} to {{ number_format(($bet->min_bet ?? 0) * config('betting.max_bet_multiplier', 10)) }} BON
+            </div>
+            <input type="hidden" name="min_bet" value="{{ $bet->min_bet }}">
+        </div>
+    @endif
 
     <div class="bet__closing-time-container">
             <label for="closing_time">Expiry Date/Time</label>
@@ -103,6 +129,7 @@
                 // Initialize state on page load
                 toggleClosingTimeRequired();
 
+                @if (!$hasEntries)
                 VirtualSelect.init({
                     ele: '#min_bet_virtual_select',
                     options: [
@@ -117,6 +144,7 @@
                     required: true,
                     selectedValue: "{{ old('min_bet', $bet->min_bet ?? config('betting.allowed_min_bets.0', 1000)) }}"
                 });
+                @endif
             });
         </script>
     </div>

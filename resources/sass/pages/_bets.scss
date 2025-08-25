@@ -135,7 +135,8 @@
                     .bet__info {
                         display: grid;
                         grid-template-rows: auto auto;
-                        grid-template-columns: 75px auto;
+                        grid-template-columns: max-content 1fr; /* first column sized to content */
+                        column-gap: 12px; /* space between columns */
                         row-gap: 0;
                         text-align: left;
                         align-items: center;
@@ -147,14 +148,18 @@
                             justify-self: start;
                         }
 
-                        span {
+                        .user-tag {
                             grid-row: 2;
                             display: block;
                             margin-bottom: 2px;
                             font-size: 12px;
+                            white-space: nowrap;           /* keep username on one line */
+                            overflow: hidden;
+                            text-overflow: ellipsis;      /* ellipsis if too long */
+                            max-width: 40ch;              /* optional cap to avoid extreme growth */
                         }
 
-                        p {
+                        .bet__range {
                             grid-row: 2;
                             display: block;
                             margin: 0;
@@ -559,6 +564,19 @@
         box-sizing: border-box;
     }
 
+    .form__text-static {
+        width: 100%;
+        padding: 8px 12px;
+        background-color: var(--bet-field-disabled-bg, #2a2a2a);
+        border: 1px solid var(--bet-field-disabled-border, #444);
+        border-radius: 4px;
+        color: var(--bet-field-disabled-text, #aaa);
+        font-family: inherit;
+        font-size: 14px;
+        cursor: not-allowed;
+        box-sizing: border-box;
+    }
+
     textarea.form__text {
         min-height: 100px;
         resize: vertical;
@@ -568,6 +586,7 @@
         display: grid;
         grid-template-columns: 1fr;
         gap: 8px;
+        margin-top: 6px;
     }
 
     @media (min-width: 700px) {

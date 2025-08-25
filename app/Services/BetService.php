@@ -61,19 +61,60 @@ class BetService
      */
     public function updateBet(Bet $bet, array $data): Bet
     {
-        if ($bet->entries()->count() > 0) {
-            throw new \Exception('Cannot edit bet after entries have been made.');
-        }
-
-        $bet->update([
-            'name' => $data['name'],
+        $bet->update(array_filter([
+            'name' => $data['name'] ?? null,
             'description' => $data['description'] ?? null,
-            'closing_time' => $data['closing_time'],
-            'min_bet' => $data['min_bet'],
-            'is_open_ended' => $data['is_open_ended'] ?? false,
-        ]);
+            'closing_time' => $data['closing_time'] ?? null,
+            'min_bet' => $data['min_bet'] ?? null,
+            'is_open_ended' => $data['is_open_ended'] ?? null,
+        ], fn($value) => $value !== null));
 
         return $bet;
+    }
+
+    /**
+     * Update bet outcomes (staff only for bets with entries).
+     */
+    public function updateBetOutcomes(Bet $bet, array $outcomes): void
+    {
+        $filteredOutcomes = array_filter($outcomes, fn($o) => trim($o) !== '');
+        
+        $minOutcomes = config('betting.min_outcomes', 2);
+        $maxOutcomes = config('betting.max_outcomes', 5);
+        
+        if (count($filteredOutcomes) < $minOutcomes) {
+            throw new \Exception("At least {$minOutcomes} outcomes are required.");
+        }
+        
+        if (count($filteredOutcomes) > $maxOutcomes) {
+            throw new \Exception("Maximum {$maxOutcomes} outcomes are allowed.");
+        }
+
+        DB::transaction(function () use ($bet, $filteredOutcomes) {
+            // Get existing outcomes
+            $existingOutcomes = $bet->outcomes()->get();
+            
+            // Update or create outcomes
+            foreach ($filteredOutcomes as $index => $outcomeName) {
+                if (isset($existingOutcomes[$index])) {
+                    // Update existing outcome
+                    $existingOutcomes[$index]->update(['name' => $outcomeName]);
+                } else {
+                    // Create new outcome
+                    $bet->outcomes()->create(['name' => $outcomeName]);
+                }
+            }
+            
+            // Remove extra outcomes (only if they have no entries)
+            if (count($existingOutcomes) > count($filteredOutcomes)) {
+                $outcomesToRemove = $existingOutcomes->slice(count($filteredOutcomes));
+                foreach ($outcomesToRemove as $outcome) {
+                    if ($outcome->entries()->count() === 0) {
+                        $outcome->delete();
+                    }
+                }
+            }
+        });
     }
 
     /**

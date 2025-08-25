@@ -90,10 +90,41 @@ class BetController extends Controller
             ? $bet->entries()->where('user_id', $request->user()->id)->exists()
             : false;
 
+        // Calculate betting statistics
+        $houseEdge = (float) config('betting.payout.house_edge', 0.05);
+        $totalPot = (float) $bet->pot_size;
+        $payoutPot = $totalPot * (1 - $houseEdge);
+        $showOdds = config('betting.show_odds', true);
+        $showExpectedPayout = config('betting.show_expected_payout', true);
+
+        $outcomeStats = [];
+        foreach ($bet->outcomes as $outcome) {
+            $outcomeTotal = (float) $outcome->entries->sum('amount');
+            $odds = ($outcomeTotal > 0) ? ($payoutPot / $outcomeTotal) : 0;
+
+            $expectedPerEntry = [];
+            foreach ($outcome->entries as $entry) {
+                $expectedPerEntry[$entry->id] = ($outcomeTotal > 0)
+                    ? ($entry->amount / $outcomeTotal) * $payoutPot
+                    : 0;
+            }
+
+            $outcomeStats[$outcome->id] = [
+                'outcomeTotal' => $outcomeTotal,
+                'odds' => $odds,
+                'expectedPerEntry' => $expectedPerEntry,
+            ];
+        }
+
         return view('bets.show', [
             'bet' => $bet,
             'user' => $request->user(),
             'userHasAlreadyBet' => $userHasAlreadyBet,
+            'totalPot' => $totalPot,
+            'payoutPot' => $payoutPot,
+            'showOdds' => $showOdds,
+            'showExpectedPayout' => $showExpectedPayout,
+            'outcomeStats' => $outcomeStats,
         ]);
     }
 
@@ -103,7 +134,13 @@ class BetController extends Controller
     public function edit(Request $request, Bet $bet)
     {
         abort_unless(can_edit_bet($request->user(), $bet), 403);
-        if ($bet->entries()->count() > 0) {
+        
+        // Only allow staff to edit bets with entries
+        $user = $request->user();
+        $isModerator = !empty($user->group->is_modo);
+        $hasEntries = $bet->entries()->count() > 0;
+        
+        if ($hasEntries && !$isModerator) {
             return redirect()->route('bets.show', $bet->id)
                 ->with('error', 'Cannot edit bet after entries have been made.');
         }
@@ -121,20 +158,44 @@ class BetController extends Controller
     {
         abort_unless(can_edit_bet($request->user(), $bet), 403);
 
+        $user = $request->user();
+        $isModerator = !empty($user->group->is_modo);
+        $hasEntries = $bet->entries()->count() > 0;
+        
+        // Only allow staff to update bets with entries
+        if ($hasEntries && !$isModerator) {
+            return redirect()->route('bets.show', $bet->id)
+                ->with('error', 'Cannot edit bet after entries have been made.');
+        }
+
         $validated = $request->validated();
         
         // Handle open-ended logic
         $isOpenEnded = $request->boolean('is_open_ended');
         $closingTime = $isOpenEnded ? null : $validated['closing_time'];
 
+        // If bet has entries, don't allow min_bet changes
+        $updateData = [
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'closing_time' => $closingTime,
+            'is_open_ended' => $isOpenEnded,
+        ];
+
+        // Only allow min_bet changes if no entries exist
+        if (!$hasEntries) {
+            $updateData['min_bet'] = $validated['min_bet'];
+        }
+
         try {
-            $this->betService->updateBet($bet, [
-                'name' => $validated['name'],
-                'description' => $validated['description'] ?? null,
-                'closing_time' => $closingTime,
-                'min_bet' => $validated['min_bet'],
-                'is_open_ended' => $isOpenEnded,
-            ]);
+            $this->betService->updateBet($bet, $updateData);
+
+            // Handle outcomes - allow modifications even with entries for staff
+            if (isset($validated['outcomes']) && $isModerator) {
+                $this->betService->updateBetOutcomes($bet, $validated['outcomes']);
+            } elseif (isset($validated['outcomes']) && !$hasEntries) {
+                $this->betService->updateBetOutcomes($bet, $validated['outcomes']);
+            }
 
             return redirect()->route('bets.show', $bet->id)
                 ->with('success', 'Bet updated successfully!');

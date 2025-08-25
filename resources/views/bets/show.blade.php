@@ -82,11 +82,11 @@
                 <table class="bet__stats-table">
                     <tr>
                         <td><strong>Bet Range:</strong></td>
-                        <td>{{ number_format($bet->min_bet) }} - {{ number_format($bet->min_bet * 10) }} BP</td>
+                        <td>{{ number_format($bet->min_bet) }} - {{ number_format($bet->min_bet * 10) }} BON</td>
                     </tr>
                     <tr>
                         <td><strong>Current Pot:</strong></td>
-                        <td>{{ number_format($bet->pot_size) }} BP</td>
+                        <td>{{ number_format($bet->pot_size) }} BON</td>
                     </tr>
                     <tr>
                         <td><strong>Total Members:</strong></td>
@@ -144,7 +144,7 @@
                                         onclick="return confirm('Are you sure? This will close the bet and distribute payouts.')">
                                         Close Bet
                                     </button>
-                                    <button type="button" class="form__button form__button--warning"
+                                    <button type="button" class="form__button form__button--danger"
                                         onclick="if(confirm('Are you sure? This will cancel the bet and refund all entries.')) { document.getElementById('cancel-form').submit(); }">
                                         Cancel Bet
                                     </button>
@@ -161,22 +161,16 @@
         <div class="bet__outcome-container">
             @foreach ($bet->outcomes as $outcome)
                 @php
-                    $outcomeTotal = $outcome->entries->sum('amount');
-                    $totalPot = $bet->pot_size;
+                    $stats = $outcomeStats[$outcome->id] ?? ['outcomeTotal' => 0, 'odds' => 0, 'expectedPerEntry' => []];
                 @endphp
                 <div class="bet__outcome {{ $bet->status === \App\Enums\BetStatus::CANCELLED ? 'bet__outcome--cancelled' : '' }}">
                     <h3 class="bet__outcome-header">
                         {{ $outcome->name }}
                         <span class="bet__outcome-stats">
-                            STAKE: {{ number_format($outcome->entries->sum('amount')) }} BP
+                            STAKE: {{ number_format($stats['outcomeTotal']) }} BON
                             ({{ $outcome->entries->count() }} {{ Str::plural('bet', $outcome->entries->count()) }})
-                            @if (config('betting.show_odds', true) && $bet->status === \App\Enums\BetStatus::OPEN && $totalPot > 0 && $outcomeTotal > 0)
-                                @php
-                                    $houseEdge = config('betting.payout.house_edge', 0.05);
-                                    $payoutPot = $totalPot * (1 - $houseEdge);
-                                    $odds = $payoutPot / $outcomeTotal;
-                                @endphp
-                                | ODDS: {{ number_format($odds, 2) }}:1
+                            @if ($showOdds && $bet->status === \App\Enums\BetStatus::OPEN && $totalPot > 0 && $stats['outcomeTotal'] > 0)
+                                | ODDS: {{ number_format($stats['odds'], 2) }}:1
                             @endif
                         </span>
                         @if ($bet->status === \App\Enums\BetStatus::COMPLETED && $bet->winner_outcome_id === $outcome->id)
@@ -204,27 +198,25 @@
                                         <td>
                                             <x-user-tag :user="$entry->user" :anon="$entry->anon" />
                                         </td>
-                                        <td>{{ number_format($entry->amount) }} BP</td>
+                                        <td>{{ number_format($entry->amount) }} BON</td>
 
                                         @if ($bet->status === \App\Enums\BetStatus::COMPLETED)
                                             <td>
                                                 @if ($entry->payout)
-                                                    <span class="text-success">{{ number_format($entry->payout, 2) }} BP</span>
+                                                    <span class="text-success">{{ number_format($entry->payout, 2) }} BON</span>
                                                 @else
                                                     <span class="text-muted">No payout</span>
                                                 @endif
                                             </td>
-                                        @elseif (config('betting.show_expected_payout', true))
-                                            <td>
-                                                @if ($outcomeTotal > 0)
-                                                    {{ number_format((float) $entry->amount / $outcomeTotal * $totalPot, 2) }} BP
-                                                @else
-                                                    <span class="text-muted">—</span>
-                                                @endif
-                                            </td>
-                                        @endif
-
-                                        <td>{{ $entry->created_at->diffForHumans() }}</td>
+                        @elseif (config('betting.show_expected_payout', true))
+                            <td>
+                                @if (isset($stats['expectedPerEntry'][$entry->id]))
+                                    {{ number_format($stats['expectedPerEntry'][$entry->id], 2) }} BON
+                                @else
+                                    <span class="text-muted">—</span>
+                                @endif
+                            </td>
+                        @endif                                        <td>{{ $entry->created_at->diffForHumans() }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -253,7 +245,7 @@
                                     <button type="submit" class="form__button form__button--filled">Place Bet</button>
                                 </div>
                                 <small class="bet__balance-info">
-                                    Your current balance: {{ number_format($user->seedbonus) }} BP
+                                    Your current balance: {{ number_format($user->seedbonus) }} BON
                                 </small>
                             </form>
                         </div>
